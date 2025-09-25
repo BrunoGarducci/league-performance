@@ -1,798 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kairat Sydney FC - Data Management</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f1419 100%);
-            min-height: 100vh;
-            color: #333;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(45, 143, 45, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(26, 93, 26, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            background: rgba(255, 255, 255, 0.98);
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #2d8f2d, #1a5d1a, #2d8f2d);
-        }
-
-        .header h1 {
-            color: #1a1a2e;
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-            font-weight: 700;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 1.2em;
-            font-weight: 500;
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 8px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 18px 25px;
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 15px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        .tab::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(45, 143, 45, 0.3), rgba(26, 93, 26, 0.3));
-            border-radius: 15px;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .tab.active::before {
-            opacity: 1;
-        }
-
-        .tab.active {
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(45, 143, 45, 0.4);
-        }
-
-        .tab:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .form-section {
-            display: none;
-            background: rgba(255, 255, 255, 0.98);
-            padding: 40px;
-            border-radius: 25px;
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .form-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #2d8f2d, #1a5d1a, #2d8f2d);
-        }
-
-        .form-section.active {
-            display: block;
-            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes slideInUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(40px);
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0);
-            }
-        }
-
-        .form-section h2 {
-            color: #1a1a2e;
-            margin-bottom: 35px;
-            font-size: 2.2em;
-            font-weight: 700;
-            text-align: center;
-            position: relative;
-            padding-bottom: 15px;
-        }
-
-        .form-section h2::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background: linear-gradient(90deg, #2d8f2d, #1a5d1a);
-            border-radius: 2px;
-        }
-
-        /* Data Table Styles */
-        .data-section {
-            margin-top: 40px;
-            background: rgba(26, 26, 46, 0.95);
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-        }
-
-        .data-section h3 {
-            color: white;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: rgba(255, 255, 255, 0.98);
-            font-size: 0.9em;
-        }
-
-        .data-table th {
-            background: linear-gradient(135deg, #2d8f2d, #1a5d1a);
-            color: white;
-            padding: 15px 12px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            white-space: nowrap;
-        }
-
-        .data-table td {
-            padding: 12px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            color: #333;
-            vertical-align: middle;
-        }
-
-        .data-table tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        .data-table tbody tr:hover {
-            background: rgba(45, 143, 45, 0.05);
-            transform: scale(1.001);
-        }
-
-        .data-table tbody tr:nth-child(even) {
-            background: rgba(0, 0, 0, 0.02);
-        }
-
-        .player-photo {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #2d8f2d;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .round-badge {
-            background: linear-gradient(135deg, #2d8f2d, #1a5d1a);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: 600;
-            text-align: center;
-            min-width: 30px;
-            display: inline-block;
-        }
-
-        .goals-cell {
-            font-weight: 700;
-            color: #2d8f2d;
-            font-size: 1.1em;
-        }
-
-        .position-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.75em;
-            font-weight: 600;
-            text-align: center;
-            color: white;
-        }
-
-        .position-pivot { background: #ff6b35; }
-        .position-winger { background: #4ecdc4; }
-        .position-defender { background: #45b7d1; }
-        .position-goalkeeper { background: #96ceb4; }
-
-        .match-score {
-            font-weight: 700;
-            font-size: 1.2em;
-            color: #1a1a2e;
-            text-align: center;
-            padding: 8px;
-            background: linear-gradient(135deg, rgba(45, 143, 45, 0.1), rgba(26, 93, 26, 0.1));
-            border-radius: 8px;
-        }
-
-        .team-name {
-            font-weight: 600;
-            color: #1a5d1a;
-        }
-
-        .cards-cell {
-            text-align: center;
-        }
-
-        .yellow-card, .red-card {
-            display: inline-block;
-            width: 12px;
-            height: 16px;
-            border-radius: 2px;
-            margin: 0 2px;
-            font-size: 0.7em;
-            line-height: 16px;
-            text-align: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        .yellow-card { background: #ffd700; color: #333; }
-        .red-card { background: #dc3545; }
-
-        .no-data {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.7);
-            font-style: italic;
-            padding: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .data-table {
-                font-size: 0.8em;
-            }
-            
-            .data-table th,
-            .data-table td {
-                padding: 8px 6px;
-            }
-            
-            .player-photo {
-                width: 30px;
-                height: 30px;
-            }
-        }
-
-        /* Player Performance Grid - 3 columns */
-        .player-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin-bottom: 35px;
-        }
-
-        /* Match Results Grid - 2 columns */
-        .match-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            margin-bottom: 35px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .form-group label {
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #1a1a2e;
-            font-size: 0.95em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 16px 18px;
-            border: 2px solid #e8e8e8;
-            border-radius: 12px;
-            font-size: 1em;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: #fafafa;
-            color: #333;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #2d8f2d;
-            background: white;
-            box-shadow: 0 8px 25px rgba(45, 143, 45, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .form-group input:hover:not(:focus),
-        .form-group select:hover:not(:focus) {
-            border-color: #ccc;
-            transform: translateY(-1px);
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #2d8f2d, #1a5d1a);
-            color: white;
-            padding: 18px 40px;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.2em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 25px rgba(45, 143, 45, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-            margin: 0 auto;
-            display: block;
-            min-width: 250px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(45, 143, 45, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(-1px);
-        }
-
-        .success-message {
-            display: none;
-            background: linear-gradient(135deg, #4CAF50, #2d8f2d);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 25px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.1em;
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-            animation: successPulse 0.6s ease-out;
-        }
-
-        @keyframes successPulse {
-            0% { transform: scale(0.95); opacity: 0; }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .football-icon {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, #2d8f2d, #1a5d1a);
-            border-radius: 50%;
-            margin-right: 15px;
-            position: relative;
-            box-shadow: 0 4px 12px rgba(45, 143, 45, 0.3);
-        }
-
-        .football-icon::before {
-            content: '⚽';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 14px;
-            filter: brightness(1.2);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .player-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .player-grid,
-            .match-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .tabs {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .tab {
-                margin-bottom: 0;
-            }
-
-            .form-section {
-                padding: 25px;
-            }
-
-            .header h1 {
-                font-size: 2.2em;
-            }
-
-            .form-section h2 {
-                font-size: 1.8em;
-            }
-        }
-
-        /* Special styling for wide form elements */
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        /* Enhanced select styling */
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 16px;
-            padding-right: 45px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Football Data Entry</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
+    header { background: #222; color: white; padding: 1rem; text-align: center; }
+    .tabs { display: flex; justify-content: center; background: #eee; }
+    .tab { padding: 1rem; cursor: pointer; }
+    .tab.active { background: #ddd; font-weight: bold; }
+    .container { max-width: 600px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,.1); }
+    form { display: flex; flex-direction: column; }
+    label { margin-top: 10px; }
+    input, select { padding: 0.5rem; margin-top: 5px; }
+    button { margin-top: 1rem; padding: 0.75rem; border: none; border-radius: 4px; background: #007bff; color: white; font-size: 1rem; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .success-message { color: green; display: none; margin-top: 1rem; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><span class="football-icon"></span>Kairat Sydney FC</h1>
-            <p>Sistema de Gestão de Dados da Liga</p>
-        </div>
+  <header>
+    <h1>Football Data Entry</h1>
+  </header>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('player-performance')">
-                Desempenho dos Jogadores
-            </button>
-            <button class="tab" onclick="switchTab('match-results')">
-                Resultados das Partidas
-            </button>
-        </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('player-performance')">Player Performance</div>
+    <div class="tab" onclick="switchTab('match-results')">Match Results</div>
+  </div>
 
-        <!-- Player Performance Form -->
-        <div id="player-performance" class="form-section active">
-            <h2>Desempenho dos Jogadores</h2>
-            <form id="playerForm" onsubmit="submitForm(event, 'player-performance')">
-                <div class="player-grid">
-                    <div class="form-group">
-                        <label for="round">Round</label>
-                        <select id="round" name="Round" required>
-                            <option value="">Selecionar Round</option>
-                            <option value="R1">R1</option>
-                            <option value="R2">R2</option>
-                            <option value="R3">R3</option>
-                            <option value="R4">R4</option>
-                            <option value="R5">R5</option>
-                            <option value="R6">R6</option>
-                            <option value="R7">R7</option>
-                            <option value="R8">R8</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="team">Team</label>
-                        <input type="text" id="team" name="Team" value="Kairat Sydney FC" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="player">Player</label>
-                        <select id="player" name="Player" required>
-                            <option value="">Selecionar Jogador</option>
-                            <option value="Sergio">Sergio</option>
-                            <option value="Fransua">Fransua</option>
-                            <option value="Jeromel">Jeromel</option>
-                            <option value="Bruno Garducci">Bruno Garducci</option>
-                            <option value="Carlos">Carlos</option>
-                            <option value="Bruno Bortolo">Bruno Bortolo</option>
-                            <option value="Gigi">Gigi</option>
-                            <option value="Love">Love</option>
-                            <option value="Alibek">Alibek</option>
-                            <option value="Ciro">Ciro</option>
-                            <option value="Timur">Timur</option>
-                            <option value="Nick">Nick</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="position">Position</label>
-                        <select id="position" name="Position" required>
-                            <option value="">Selecionar Posição</option>
-                            <option value="Pivot">Pivot</option>
-                            <option value="Winger">Winger</option>
-                            <option value="Defender">Defender</option>
-                            <option value="Goalkeeper">Goalkeeper</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="goals">Goals</label>
-                        <input type="number" id="goals" name="Goals" min="0" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="assists">Assists</label>
-                        <input type="number" id="assists" name="Assists" min="0" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="shots">Shots</label>
-                        <input type="number" id="shots" name="Shots" min="0" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="shotsOnTarget">Shots on Target</label>
-                        <input type="number" id="shotsOnTarget" name="Shots on Target" min="0" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="passesCompleted">Passes Completed</label>
-                        <input type="number" id="passesCompleted" name="Passes Completed" min="0" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="interceptions">Interceptions</label>
-                        <input type="number" id="interceptions" name="Interceptions" min="0" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="yellowCards">Yellow Cards</label>
-                        <input type="number" id="yellowCards" name="Yellow Cards" min="0" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="redCards">Red Cards</label>
-                        <input type="number" id="redCards" name="Red Cards" min="0" value="">
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="url">URL (Foto do Jogador)</label>
-                        <input type="url" id="url" name="URL" placeholder="https://exemplo.com/foto-jogador.jpg">
-                    </div>
-                </div>
-                <button type="submit" class="btn">⚽ Salvar Desempenho do Jogador</button>
-                <div class="success-message" id="playerSuccess">✅ Dados do jogador salvos com sucesso!</div>
-            </form>
-        </div>
+  <div id="player-performance" class="container form-section active">
+    <h2>Player Performance</h2>
+    <form onsubmit="return submitForm(event,'player-performance')">
+      <label>Round<input type="text" name="Round" required /></label>
+      <label>Team<input type="text" id="team" name="Team" value="Kairat Sydney FC" required /></label>
+      <label>Player<input type="text" name="Player" required /></label>
+      <label>Position
+        <select name="Position" required>
+          <option>Goalkeeper</option>
+          <option>Defender</option>
+          <option>Winger</option>
+          <option>Pivot</option>
+        </select>
+      </label>
+      <label>Goals<input type="number" id="goals" name="Goals" value="0" /></label>
+      <label>Assists<input type="number" name="Assists" value="0" /></label>
+      <label>Shots<input type="number" name="Shots" value="0" /></label>
+      <label>Shots on Target<input type="number" name="Shots on Target" value="0" /></label>
+      <label>Passes Completed<input type="number" name="Passes Completed" value="0" /></label>
+      <label>Interceptions<input type="number" name="Interceptions" value="0" /></label>
+      <label>Yellow Cards<input type="number" name="Yellow Cards" value="0" /></label>
+      <label>Red Cards<input type="number" name="Red Cards" value="0" /></label>
+      <label>Image URL<input type="url" name="URL" /></label>
+      <button type="submit">Submit Player</button>
+      <div class="success-message">Player data submitted successfully!</div>
+    </form>
+  </div>
 
-        <!-- Match Results Form -->
-        <div id="match-results" class="form-section">
-            <h2>Resultados das Partidas</h2>
-            <form id="matchForm" onsubmit="submitForm(event, 'match-results')">
-                <div class="match-grid">
-                    <div class="form-group">
-                        <label for="date">Date</label>
-                        <input type="date" id="date" name="Date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="matchRound">Round</label>
-                        <select id="matchRound" name="Round" required>
-                            <option value="">Selecionar Round</option>
-                            <option value="R1">R1</option>
-                            <option value="R2">R2</option>
-                            <option value="R3">R3</option>
-                            <option value="R4">R4</option>
-                            <option value="R5">R5</option>
-                            <option value="R6">R6</option>
-                            <option value="R7">R7</option>
-                            <option value="R8">R8</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="homeTeam">Home Team</label>
-                        <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="awayTeam">Away Team</label>
-                        <input type="text" id="awayTeam" name="Away Team" placeholder="Time adversário" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="homeGoals">Home Goals</label>
-                        <input type="number" id="homeGoals" name="Home Goals" min="0" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="awayGoals">Away Goals</label>
-                        <input type="number" id="awayGoals" name="Away Goals" min="0" required>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="league">League</label>
-                        <input type="text" id="league" name="League" placeholder="Nome da liga ou competição">
-                    </div>
-                </div>
-                <button type="submit" class="btn">🏆 Salvar Resultado da Partida</button>
-                <div class="success-message" id="matchSuccess">✅ Resultado da partida salvo com sucesso!</div>
-            </form>
-        </div>
-    </div>
+  <div id="match-results" class="container form-section" style="display:none;">
+    <h2>Match Results</h2>
+    <form onsubmit="return submitForm(event,'match-results')">
+      <label>Date<input type="date" id="date" name="Date" required /></label>
+      <label>Round<input type="text" name="Round" required /></label>
+      <label>Home Team<input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required /></label>
+      <label>Away Team<input type="text" name="Away Team" required /></label>
+      <label>Home Goals<input type="number" name="Home Goals" value="0" /></label>
+      <label>Away Goals<input type="number" name="Away Goals" value="0" /></label>
+      <label>League<input type="text" name="League" /></label>
+      <button type="submit">Submit Match</button>
+      <div class="success-message">Match data submitted successfully!</div>
+    </form>
+  </div>
 
-    <script>
-        function switchTab(tabName) {
-            // Hide all sections
-            const sections = document.querySelectorAll('.form-section');
-            sections.forEach(section => section.classList.remove('active'));
-            
-            // Remove active from all tabs
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            // Show selected section
-            document.getElementById(tabName).classList.add('active');
-            
-            // Add active to clicked tab
-            event.target.classList.add('active');
-        }
+  <script>
+  /* ENDPOINTS */
+  const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbyLkx9Uz7Iod0_QHB2vE1zNyCcLQk_E-1XABhbFsl_nVN08AuM2qmB8mJN_LWesBlY6UQ/exec';
+  const ENDPOINT_PLAYERS = ''; // coloque aqui a URL do Apps Script de players quando publicar
+  const TOKEN = 'leagueperformance-matchresults-2025_sesson$s2'; // use o mesmo que está no Apps Script
 
-        function submitForm(event, formType) {
-            event.preventDefault();
-            
-            const form = event.target;
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            // Here you would integrate with Google Sheets API
-            // Example: sendToGoogleSheets(formType, data);
-            
-            console.log(`Submitting ${formType} data:`, data);
-            
-            // Show success message
-            const successElement = form.querySelector('.success-message');
-            successElement.style.display = 'block';
-            
-            // Hide success message after 4 seconds
-            setTimeout(() => {
-                successElement.style.display = 'none';
-            }, 4000);
-            
-            // Reset form
-            form.reset();
-            
-            // Restore default values
-            if (formType === 'player-performance') {
-                document.getElementById('team').value = 'Kairat Sydney FC';
-                document.getElementById('goals').value = '0';
-            } else if (formType === 'match-results') {
-                document.getElementById('homeTeam').value = 'Kairat Sydney FC';
-            }
-        }
+  function switchTab(tabName) {
+    const sections = document.querySelectorAll('.form-section');
+    sections.forEach(s => s.style.display = 'none');
+    document.getElementById(tabName).style.display = 'block';
 
-        // Function to send data to Google Sheets (to be implemented)
-        function sendToGoogleSheets(sheetType, data) {
-            // This is where you would implement the Google Sheets API integration
-            // You'll need to:
-            // 1. Set up Google Sheets API credentials
-            // 2. Create appropriate endpoint URLs for each sheet
-            // 3. Send POST requests with the form data
-            
-            const GOOGLE_SHEETS_API_URL = 'YOUR_GOOGLE_SHEETS_API_ENDPOINT';
-            
-            fetch(GOOGLE_SHEETS_API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    sheet: sheetType,
-                    data: data
-                })
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log('Data sent successfully:', result);
-            })
-            .catch(error => {
-                console.error('Error sending data:', error);
-            });
-        }
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+  }
 
-        // Set today's date as default
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date();
-            const dateString = today.toISOString().split('T')[0];
-            document.getElementById('date').value = dateString;
-        });
-    </script>
+  async function submitForm(event, formType) {
+    event.preventDefault();
+    const form = event.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    const url = formType === 'match-results'
+      ? ENDPOINT_MATCHES
+      : ENDPOINT_PLAYERS;
+
+    if (!url) {
+      alert('Endpoint não configurado para este formulário.');
+      return false;
+    }
+
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + TOKEN
+        },
+        body: JSON.stringify(data)
+      });
+      const json = await resp.json();
+      if (!resp.ok || !json.ok) {
+        throw new Error(json.error || ('HTTP ' + resp.status));
+      }
+
+      const success = form.querySelector('.success-message');
+      if (success) {
+        success.style.display = 'block';
+        setTimeout(() => success.style.display = 'none', 4000);
+      }
+
+      form.reset();
+      if (formType === 'player-performance') {
+        document.getElementById('team').value = 'Kairat Sydney FC';
+        document.getElementById('goals').value = '0';
+      } else if (formType === 'match-results') {
+        document.getElementById('homeTeam').value = 'Kairat Sydney FC';
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').value = today;
+      }
+    } catch (err) {
+      alert('Falhou: ' + err.message);
+    }
+    return false;
+  }
+
+  // Define a data de hoje ao carregar
+  document.addEventListener('DOMContentLoaded', function () {
+    const today = new Date().toISOString().split('T')[0];
+    const dateEl = document.getElementById('date');
+    if (dateEl) dateEl.value = today;
+  });
+  </script>
 </body>
 </html>
