@@ -1,40 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Football Data Entry</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
-    header { background: #222; color: white; padding: 1rem; text-align: center; }
-    .tabs { display: flex; justify-content: center; background: #eee; }
-    .tab { padding: 1rem; cursor: pointer; }
-    .tab.active { background: #ddd; font-weight: bold; }
-    .container { max-width: 600px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,.1); }
-    form { display: flex; flex-direction: column; }
-    label { margin-top: 10px; }
-    input, select { padding: 0.5rem; margin-top: 5px; }
-    button { margin-top: 1rem; padding: 0.75rem; border: none; border-radius: 4px; background: #007bff; color: white; font-size: 1rem; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    .success-message { color: green; display: none; margin-top: 1rem; }
+    body { font-family: Arial, sans-serif; margin:0; background:#f9f9f9; }
+    header { background:#222; color:#fff; padding:1rem; text-align:center; }
+    .tabs { display:flex; justify-content:center; background:#eee; }
+    .tab { padding:1rem; cursor:pointer; }
+    .tab.active { background:#ddd; font-weight:bold; }
+    .container { max-width:640px; margin:2rem auto; padding:2rem; background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); }
+    form { display:flex; flex-direction:column; }
+    label { margin-top:10px; font-weight:600; }
+    input, select { padding:.55rem; margin-top:6px; border:1px solid #ccc; border-radius:4px; }
+    button { margin-top:16px; padding:.8rem; border:0; border-radius:6px; background:#0d6efd; color:#fff; font-size:1rem; cursor:pointer; }
+    button:hover { background:#0b5ed7; }
+    .success-message { color:green; display:none; margin-top:12px; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Football Data Entry</h1>
-  </header>
+  <header><h1>Football Data Entry</h1></header>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('player-performance')">Player Performance</div>
-    <div class="tab" onclick="switchTab('match-results')">Match Results</div>
+    <div class="tab active" onclick="switchTab('player-performance', event)">Player Performance</div>
+    <div class="tab" onclick="switchTab('match-results', event)">Match Results</div>
   </div>
 
-  <div id="player-performance" class="container form-section active">
+  <!-- PLAYER PERFORMANCE -->
+  <div id="player-performance" class="container form-section" style="display:block;">
     <h2>Player Performance</h2>
-    <form onsubmit="return submitForm(event,'player-performance')">
-      <label>Round<input type="text" name="Round" required /></label>
-      <label>Team<input type="text" id="team" name="Team" value="Kairat Sydney FC" required /></label>
-      <label>Player<input type="text" name="Player" required /></label>
+    <form onsubmit="return submitForm(event, 'player-performance')">
+      <label>Round <input type="text" name="Round" required/></label>
+      <label>Team <input type="text" id="team" name="Team" value="Kairat Sydney FC" required/></label>
+      <label>Player <input type="text" name="Player" required/></label>
       <label>Position
         <select name="Position" required>
           <option>Goalkeeper</option>
@@ -43,106 +42,94 @@
           <option>Pivot</option>
         </select>
       </label>
-      <label>Goals<input type="number" id="goals" name="Goals" value="0" /></label>
-      <label>Assists<input type="number" name="Assists" value="0" /></label>
-      <label>Shots<input type="number" name="Shots" value="0" /></label>
-      <label>Shots on Target<input type="number" name="Shots on Target" value="0" /></label>
-      <label>Passes Completed<input type="number" name="Passes Completed" value="0" /></label>
-      <label>Interceptions<input type="number" name="Interceptions" value="0" /></label>
-      <label>Yellow Cards<input type="number" name="Yellow Cards" value="0" /></label>
-      <label>Red Cards<input type="number" name="Red Cards" value="0" /></label>
-      <label>Image URL<input type="url" name="URL" /></label>
+      <label>Goals <input type="number" id="goals" name="Goals" value="0"/></label>
+      <label>Assists <input type="number" name="Assists" value="0"/></label>
+      <label>Shots <input type="number" name="Shots" value="0"/></label>
+      <label>Shots on Target <input type="number" name="Shots on Target" value="0"/></label>
+      <label>Passes Completed <input type="number" name="Passes Completed" value="0"/></label>
+      <label>Interceptions <input type="number" name="Interceptions" value="0"/></label>
+      <label>Yellow Cards <input type="number" name="Yellow Cards" value="0"/></label>
+      <label>Red Cards <input type="number" name="Red Cards" value="0"/></label>
+      <label>Image URL <input type="url" name="URL" placeholder="https://raw.githubusercontent.com/.../player.jpg"/></label>
       <button type="submit">Submit Player</button>
       <div class="success-message">Player data submitted successfully!</div>
     </form>
   </div>
 
+  <!-- MATCH RESULTS -->
   <div id="match-results" class="container form-section" style="display:none;">
     <h2>Match Results</h2>
-    <form onsubmit="return submitForm(event,'match-results')">
-      <label>Date<input type="date" id="date" name="Date" required /></label>
-      <label>Round<input type="text" name="Round" required /></label>
-      <label>Home Team<input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required /></label>
-      <label>Away Team<input type="text" name="Away Team" required /></label>
-      <label>Home Goals<input type="number" name="Home Goals" value="0" /></label>
-      <label>Away Goals<input type="number" name="Away Goals" value="0" /></label>
-      <label>League<input type="text" name="League" /></label>
+    <form onsubmit="return submitForm(event, 'match-results')">
+      <label>Date <input type="date" id="date" name="Date" required/></label>
+      <label>Round <input type="text" name="Round" required/></label>
+      <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
+      <label>Away Team <input type="text" name="Away Team" required/></label>
+      <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
+      <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
+      <label>League <input type="text" name="League" placeholder="Heffron"/></label>
       <button type="submit">Submit Match</button>
       <div class="success-message">Match data submitted successfully!</div>
     </form>
   </div>
 
   <script>
-  /* ENDPOINTS */
-  const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbyLkx9Uz7Iod0_QHB2vE1zNyCcLQk_E-1XABhbFsl_nVN08AuM2qmB8mJN_LWesBlY6UQ/exec';
-  const ENDPOINT_PLAYERS = ''; // coloque aqui a URL do Apps Script de players quando publicar
-  const TOKEN = 'leagueperformance-matchresults-2025_sesson$s2'; // use o mesmo que está no Apps Script
+    /* ENDPOINTS E TOKEN */
+    const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbxHM-DR3kWjZleJCs4nO0nzZ68A_rLn8srUPBMHgEFCgCdELGddeduG-MsvU2SOhxiACA/exec';
+    const ENDPOINT_PLAYERS = ''; // preencha quando publicar o Apps Script de players
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // igual ao Apps Script
 
-  function switchTab(tabName) {
-    const sections = document.querySelectorAll('.form-section');
-    sections.forEach(s => s.style.display = 'none');
-    document.getElementById(tabName).style.display = 'block';
+    function switchTab(tabId, ev){
+      document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
+      document.getElementById(tabId).style.display = 'block';
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      if (ev && ev.target) ev.target.classList.add('active');
+    }
 
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-  }
+    // envia como application/x-www-form-urlencoded para evitar preflight
+    async function submitForm(event, formType){
+      event.preventDefault();
+      const form = event.target;
+      const data = Object.fromEntries(new FormData(form).entries());
 
-  async function submitForm(event, formType) {
-    event.preventDefault();
-    const form = event.target;
-    const data = Object.fromEntries(new FormData(form).entries());
+      const url = (formType === 'match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
+      if (!url){
+        alert('Endpoint não configurado para este formulário.');
+        return false;
+      }
 
-    const url = formType === 'match-results'
-      ? ENDPOINT_MATCHES
-      : ENDPOINT_PLAYERS;
+      // injeta token no corpo
+      const body = new URLSearchParams({ ...data, token: TOKEN });
 
-    if (!url) {
-      alert('Endpoint não configurado para este formulário.');
+      try {
+        const resp = await fetch(url, { method: 'POST', body }); // sem headers custom
+        let ok = false;
+        try { const j = await resp.json(); ok = j.ok === true; } catch(_) { ok = resp.ok; }
+        if (!ok) throw new Error('Falha ao enviar');
+
+        const success = form.querySelector('.success-message');
+        if (success){ success.style.display = 'block'; setTimeout(() => success.style.display = 'none', 4000); }
+
+        form.reset();
+        if (formType === 'player-performance'){
+          document.getElementById('team').value = 'Kairat Sydney FC';
+          document.getElementById('goals').value = '0';
+        } else {
+          document.getElementById('homeTeam').value = 'Kairat Sydney FC';
+          const today = new Date().toISOString().split('T')[0];
+          document.getElementById('date').value = today;
+        }
+      } catch (err){
+        alert('Falhou: ' + err.message);
+      }
       return false;
     }
 
-    try {
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + TOKEN
-        },
-        body: JSON.stringify(data)
-      });
-      const json = await resp.json();
-      if (!resp.ok || !json.ok) {
-        throw new Error(json.error || ('HTTP ' + resp.status));
-      }
-
-      const success = form.querySelector('.success-message');
-      if (success) {
-        success.style.display = 'block';
-        setTimeout(() => success.style.display = 'none', 4000);
-      }
-
-      form.reset();
-      if (formType === 'player-performance') {
-        document.getElementById('team').value = 'Kairat Sydney FC';
-        document.getElementById('goals').value = '0';
-      } else if (formType === 'match-results') {
-        document.getElementById('homeTeam').value = 'Kairat Sydney FC';
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('date').value = today;
-      }
-    } catch (err) {
-      alert('Falhou: ' + err.message);
-    }
-    return false;
-  }
-
-  // Define a data de hoje ao carregar
-  document.addEventListener('DOMContentLoaded', function () {
-    const today = new Date().toISOString().split('T')[0];
-    const dateEl = document.getElementById('date');
-    if (dateEl) dateEl.value = today;
-  });
+    // data de hoje por padrão
+    document.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const dateEl = document.getElementById('date');
+      if (dateEl) dateEl.value = today;
+    });
   </script>
 </body>
 </html>
