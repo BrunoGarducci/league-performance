@@ -145,8 +145,7 @@
           document.getElementById('homeTeam').value = 'Kairat Sydney FC';
           const today = new Date().toISOString().split('T')[0];
           document.getElementById('date').value = today;
-          // recarrega a tabela após novo jogo
-          loadMatches();
+          loadMatches(); // recarrega a tabela
         }
       } catch (err){
         alert('Falhou: ' + err.message);
@@ -159,29 +158,34 @@
       try {
         const resp = await fetch(ENDPOINT_MATCHES, { method:'GET' });
         const json = await resp.json();
-        if (!json.ok) throw new Error(json.error || 'Erro ao obter dados');
+        if (!json || json.ok !== true || !Array.isArray(json.headers) || !Array.isArray(json.records)) {
+          throw new Error('Resposta inesperada do endpoint');
+        }
 
         const thead = document.getElementById('matches-thead');
         const tbody = document.getElementById('matches-tbody');
         thead.innerHTML = '';
         tbody.innerHTML = '';
 
-        // cabeçalho: mostra colunas mais úteis primeiro, se existirem
         const preferred = ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date'];
         const headers = reorderHeaders(json.headers, preferred);
 
         thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
 
+        if (json.records.length === 0) {
+          tbody.innerHTML = `<tr><td class="muted">Nenhum jogo encontrado</td></tr>`;
+          return;
+        }
+
         json.records.forEach(rec => {
-          const tds = headers.map(h => {
-            const v = rec[h];
-            return `<td>${escapeHtml(formatCell(v))}</td>`;
-          }).join('');
+          const tds = headers.map(h => `<td>${escapeHtml(formatCell(rec[h], h))}</td>`).join('');
           tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
         });
       } catch (e){
         console.error(e);
+        const thead = document.getElementById('matches-thead');
         const tbody = document.getElementById('matches-tbody');
+        if (thead && thead.innerHTML.trim() === '') thead.innerHTML = '<tr><th>Erro</th></tr>';
         if (tbody) tbody.innerHTML = `<tr><td>Failed to load data</td></tr>`;
       }
     }
@@ -192,16 +196,23 @@
       return [...inPreferred, ...rest];
     }
 
-    function formatCell(v){
+    // === Formatação de datas para dd-MM-yyyy HH:mm ===
+    function formatCell(v, header){
       if (v === null || v === undefined) return '';
-      // Datas do Sheets chegam como objetos Date; strings/serials também são tratados
+      // Objeto Date vindo do Apps Script
       if (Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v)) {
-        const yyyy = v.getFullYear();
-        const mm = String(v.getMonth()+1).padStart(2,'0');
-        const dd = String(v.getDate()).padStart(2,'0');
-        return `${dd}/${mm}/${yyyy}`;
+        return fmtDate(v);
+      }
+      // ISO string ou similar
+      if (typeof v === 'string') {
+        const d = new Date(v);
+        if (!isNaN(d)) return fmtDate(d);
       }
       return String(v);
+    }
+    function fmtDate(d){
+      const pad = n => String(n).padStart(2,'0');
+      return `${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
     function escapeHtml(s){
