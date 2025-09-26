@@ -20,7 +20,7 @@
   </style>
 </head>
 <body>
-  <header><h1>Football Data Entry</h1></header>
+  <header><h1>Futsal League Sydney</h1></header>
 
   <div class="tabs">
     <div class="tab active" onclick="switchTab('player-performance', event)">Player Performance</div>
@@ -60,13 +60,14 @@
   <div id="match-results" class="container form-section" style="display:none;">
     <h2>Match Results</h2>
     <form onsubmit="return submitForm(event, 'match-results')">
+      <label>League <input type="text" name="League" placeholder="Heffron"/></label>
       <label>Date <input type="date" id="date" name="Date" required/></label>
       <label>Round <input type="text" name="Round" required/></label>
       <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
       <label>Away Team <input type="text" name="Away Team" required/></label>
       <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
       <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
-      <label>League <input type="text" name="League" placeholder="Heffron"/></label>
+      
       <button type="submit">Submit Match</button>
       <div class="success-message">Match data submitted successfully!</div>
     </form>
@@ -74,7 +75,7 @@
 
   <script>
     /* ENDPOINTS E TOKEN */
-    const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbxHM-DR3kWjZleJCs4nO0nzZ68A_rLn8srUPBMHgEFCgCdELGddeduG-MsvU2SOhxiACA/exec';
+    const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbztDzuSKmjMGgYB2po9cENEKT2VBeUoUpRGm2jeT1vS5rdRdoxnGVYHC6LEh8kk95RR/exec';
     const ENDPOINT_PLAYERS = ''; // preencha quando publicar o Apps Script de players
     const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // igual ao Apps Script
 
