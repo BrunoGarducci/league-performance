@@ -10,67 +10,99 @@
     .tabs { display:flex; justify-content:center; background:#eee; }
     .tab { padding:1rem; cursor:pointer; }
     .tab.active { background:#ddd; font-weight:bold; }
-    .container { max-width:640px; margin:2rem auto; padding:2rem; background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); }
+
+    .container { max-width:1200px; margin:2rem auto; }
+    .two-col { display:grid; grid-template-columns: 1fr 1fr; gap:24px; }
+    .card { background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:1.5rem; }
+
     form { display:flex; flex-direction:column; }
     label { margin-top:10px; font-weight:600; }
     input, select { padding:.55rem; margin-top:6px; border:1px solid #ccc; border-radius:4px; }
     button { margin-top:16px; padding:.8rem; border:0; border-radius:6px; background:#0d6efd; color:#fff; font-size:1rem; cursor:pointer; }
     button:hover { background:#0b5ed7; }
     .success-message { color:green; display:none; margin-top:12px; }
+
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { border-bottom:1px solid #eee; padding:.55rem .6rem; text-align:left; }
+    th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
+    .table-wrap { max-height:520px; overflow:auto; border:1px solid #eee; border-radius:6px; }
+    .muted { color:#666; font-size:13px; }
+
+    @media (max-width: 900px){
+      .two-col { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
   <header><h1>Futsal League Sydney</h1></header>
 
   <div class="tabs">
-    <!-- Match Results primeiro e ativo -->
     <div class="tab active" onclick="switchTab('match-results', event)">Match Results</div>
     <div class="tab" onclick="switchTab('player-performance', event)">Player Performance</div>
   </div>
 
-  <!-- MATCH RESULTS primeiro e visível -->
+  <!-- MATCH RESULTS primeiro -->
   <div id="match-results" class="container form-section" style="display:block;">
-    <h2>Match Results</h2>
-    <form onsubmit="return submitForm(event, 'match-results')">
-      <label>League <input type="text" name="League" placeholder="Heffron"/></label>
-      <label>Date <input type="date" id="date" name="Date" required/></label>
-      <label>Round <input type="text" name="Round" required/></label>
-      <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
-      <label>Away Team <input type="text" name="Away Team" required/></label>
-      <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
-      <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
-      <button type="submit">Submit Match</button>
-      <div class="success-message">Match data submitted successfully!</div>
-    </form>
+    <div class="two-col">
+      <!-- Formulário -->
+      <div class="card">
+        <h2>Match Results</h2>
+        <form onsubmit="return submitForm(event, 'match-results')">
+          <label>League <input type="text" name="League" placeholder="Heffron"/></label>
+          <label>Date <input type="date" id="date" name="Date" required/></label>
+          <label>Round <input type="text" name="Round" required/></label>
+          <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
+          <label>Away Team <input type="text" name="Away Team" required/></label>
+          <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
+          <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
+          <button type="submit">Submit Match</button>
+          <div class="success-message">Match data submitted successfully!</div>
+        </form>
+      </div>
+
+      <!-- Tabela -->
+      <div class="card">
+        <h2 style="margin-bottom:.6rem;">Existing Matches</h2>
+        <div class="muted" style="margin-bottom:.6rem;">Source: <code>match-results</code> (Google Sheets)</div>
+        <div id="matches-table" class="table-wrap">
+          <table>
+            <thead id="matches-thead"></thead>
+            <tbody id="matches-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- PLAYER PERFORMANCE depois e oculto -->
+  <!-- PLAYER PERFORMANCE depois -->
   <div id="player-performance" class="container form-section" style="display:none;">
-    <h2>Player Performance</h2>
-    <form onsubmit="return submitForm(event, 'player-performance')">
-      <label>Round <input type="text" name="Round" required/></label>
-      <label>Team <input type="text" id="team" name="Team" value="Kairat Sydney FC" required/></label>
-      <label>Player <input type="text" name="Player" required/></label>
-      <label>Position
-        <select name="Position" required>
-          <option>Goalkeeper</option>
-          <option>Defender</option>
-          <option>Winger</option>
-          <option>Pivot</option>
-        </select>
-      </label>
-      <label>Goals <input type="number" id="goals" name="Goals" value="0"/></label>
-      <label>Assists <input type="number" name="Assists" value="0"/></label>
-      <label>Shots <input type="number" name="Shots" value="0"/></label>
-      <label>Shots on Target <input type="number" name="Shots on Target" value="0"/></label>
-      <label>Passes Completed <input type="number" name="Passes Completed" value="0"/></label>
-      <label>Interceptions <input type="number" name="Interceptions" value="0"/></label>
-      <label>Yellow Cards <input type="number" name="Yellow Cards" value="0"/></label>
-      <label>Red Cards <input type="number" name="Red Cards" value="0"/></label>
-      <label>Image URL <input type="url" name="URL" placeholder="https://raw.githubusercontent.com/.../player.jpg"/></label>
-      <button type="submit">Submit Player</button>
-      <div class="success-message">Player data submitted successfully!</div>
-    </form>
+    <div class="card" style="max-width:640px;">
+      <h2>Player Performance</h2>
+      <form onsubmit="return submitForm(event, 'player-performance')">
+        <label>Round <input type="text" name="Round" required/></label>
+        <label>Team <input type="text" id="team" name="Team" value="Kairat Sydney FC" required/></label>
+        <label>Player <input type="text" name="Player" required/></label>
+        <label>Position
+          <select name="Position" required>
+            <option>Goalkeeper</option>
+            <option>Defender</option>
+            <option>Winger</option>
+            <option>Pivot</option>
+          </select>
+        </label>
+        <label>Goals <input type="number" id="goals" name="Goals" value="0"/></label>
+        <label>Assists <input type="number" name="Assists" value="0"/></label>
+        <label>Shots <input type="number" name="Shots" value="0"/></label>
+        <label>Shots on Target <input type="number" name="Shots on Target" value="0"/></label>
+        <label>Passes Completed <input type="number" name="Passes Completed" value="0"/></label>
+        <label>Interceptions <input type="number" name="Interceptions" value="0"/></label>
+        <label>Yellow Cards <input type="number" name="Yellow Cards" value="0"/></label>
+        <label>Red Cards <input type="number" name="Red Cards" value="0"/></label>
+        <label>Image URL <input type="url" name="URL" placeholder="https://raw.githubusercontent.com/.../player.jpg"/></label>
+        <button type="submit">Submit Player</button>
+        <div class="success-message">Player data submitted successfully!</div>
+      </form>
+    </div>
   </div>
 
   <script>
@@ -91,23 +123,19 @@
       event.preventDefault();
       const form = event.target;
       const data = Object.fromEntries(new FormData(form).entries());
-
       const url = (formType === 'match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
-      if (!url){
-        alert('Endpoint não configurado para este formulário.');
-        return false;
-      }
+      if (!url){ alert('Endpoint não configurado para este formulário.'); return false; }
 
       const body = new URLSearchParams({ ...data, token: TOKEN });
 
       try {
-        const resp = await fetch(url, { method: 'POST', body });
+        const resp = await fetch(url, { method:'POST', body });
         let ok = false;
         try { const j = await resp.json(); ok = j.ok === true; } catch(_) { ok = resp.ok; }
         if (!ok) throw new Error('Falha ao enviar');
 
         const success = form.querySelector('.success-message');
-        if (success){ success.style.display = 'block'; setTimeout(() => success.style.display = 'none', 4000); }
+        if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 4000); }
 
         form.reset();
         if (formType === 'player-performance'){
@@ -117,6 +145,8 @@
           document.getElementById('homeTeam').value = 'Kairat Sydney FC';
           const today = new Date().toISOString().split('T')[0];
           document.getElementById('date').value = today;
+          // recarrega a tabela após novo jogo
+          loadMatches();
         }
       } catch (err){
         alert('Falhou: ' + err.message);
@@ -124,11 +154,71 @@
       return false;
     }
 
-    // data de hoje por padrão
+    // Carrega e renderiza a tabela de jogos
+    async function loadMatches(){
+      try {
+        const resp = await fetch(ENDPOINT_MATCHES, { method:'GET' });
+        const json = await resp.json();
+        if (!json.ok) throw new Error(json.error || 'Erro ao obter dados');
+
+        const thead = document.getElementById('matches-thead');
+        const tbody = document.getElementById('matches-tbody');
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
+
+        // cabeçalho: mostra colunas mais úteis primeiro, se existirem
+        const preferred = ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date'];
+        const headers = reorderHeaders(json.headers, preferred);
+
+        thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
+
+        json.records.forEach(rec => {
+          const tds = headers.map(h => {
+            const v = rec[h];
+            return `<td>${escapeHtml(formatCell(v))}</td>`;
+          }).join('');
+          tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
+        });
+      } catch (e){
+        console.error(e);
+        const tbody = document.getElementById('matches-tbody');
+        if (tbody) tbody.innerHTML = `<tr><td>Failed to load data</td></tr>`;
+      }
+    }
+
+    function reorderHeaders(headers, preferred){
+      const inPreferred = preferred.filter(h => headers.includes(h));
+      const rest = headers.filter(h => !preferred.includes(h));
+      return [...inPreferred, ...rest];
+    }
+
+    function formatCell(v){
+      if (v === null || v === undefined) return '';
+      // Datas do Sheets chegam como objetos Date; strings/serials também são tratados
+      if (Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v)) {
+        const yyyy = v.getFullYear();
+        const mm = String(v.getMonth()+1).padStart(2,'0');
+        const dd = String(v.getDate()).padStart(2,'0');
+        return `${dd}/${mm}/${yyyy}`;
+      }
+      return String(v);
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+    }
+
+    // inicializações
     document.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().split('T')[0];
       const dateEl = document.getElementById('date');
       if (dateEl) dateEl.value = today;
+      loadMatches();  // carrega a tabela ao abrir
     });
   </script>
 </body>
