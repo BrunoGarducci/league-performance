@@ -11,19 +11,20 @@
     .tab { padding:1rem; cursor:pointer; }
     .tab.active { background:#ddd; font-weight:bold; }
 
-    .container { max-width:1200px; margin:2rem auto; }
-    .two-col { display:grid; grid-template-columns: 1fr 1fr; gap:24px; }
+    .container { max-width:1400px; margin:2rem auto; }
+    /* grid com proporção 40% formulário e 60% tabela */
+    .two-col { display:grid; grid-template-columns: 40% 60%; gap:24px; align-items:start; }
     .card { background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:1.5rem; }
 
     form { display:flex; flex-direction:column; }
     label { margin-top:10px; font-weight:600; }
-    input, select { padding:.55rem; margin-top:6px; border:1px solid #ccc; border-radius:4px; }
+    input, select { padding:.55rem; margin-top:6px; border:1px solid #ccc; border-radius:4px; width:100%; }
     button { margin-top:16px; padding:.8rem; border:0; border-radius:6px; background:#0d6efd; color:#fff; font-size:1rem; cursor:pointer; }
     button:hover { background:#0b5ed7; }
     .success-message { color:green; display:none; margin-top:12px; }
 
-    table { width:100%; border-collapse:collapse; font-size:14px; }
-    th, td { border-bottom:1px solid #eee; padding:.55rem .6rem; text-align:left; }
+    table { width:100%; border-collapse:collapse; font-size:14px; table-layout:auto; }
+    th, td { border-bottom:1px solid #eee; padding:.55rem .6rem; text-align:left; white-space:nowrap; }
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
     .table-wrap { max-height:520px; overflow:auto; border:1px solid #eee; border-radius:6px; }
     .muted { color:#666; font-size:13px; }
@@ -108,8 +109,8 @@
   <script>
     /* ENDPOINTS E TOKEN */
     const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbztDzuSKmjMGgYB2po9cENEKT2VBeUoUpRGm2jeT1vS5rdRdoxnGVYHC6LEh8kk95RR/exec';
-    const ENDPOINT_PLAYERS = ''; // preencha quando publicar o Apps Script de players
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // igual ao Apps Script
+    const ENDPOINT_PLAYERS = ''; 
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; 
 
     function switchTab(tabId, ev){
       document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
@@ -118,7 +119,6 @@
       if (ev && ev.target) ev.target.classList.add('active');
     }
 
-    // envia como application/x-www-form-urlencoded para evitar preflight
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
@@ -145,7 +145,7 @@
           document.getElementById('homeTeam').value = 'Kairat Sydney FC';
           const today = new Date().toISOString().split('T')[0];
           document.getElementById('date').value = today;
-          loadMatches(); // recarrega a tabela
+          loadMatches();
         }
       } catch (err){
         alert('Falhou: ' + err.message);
@@ -153,14 +153,11 @@
       return false;
     }
 
-    // Carrega e renderiza a tabela de jogos
     async function loadMatches(){
       try {
         const resp = await fetch(ENDPOINT_MATCHES, { method:'GET' });
         const json = await resp.json();
-        if (!json || json.ok !== true || !Array.isArray(json.headers) || !Array.isArray(json.records)) {
-          throw new Error('Resposta inesperada do endpoint');
-        }
+        if (!json.ok) throw new Error(json.error || 'Erro ao obter dados');
 
         const thead = document.getElementById('matches-thead');
         const tbody = document.getElementById('matches-tbody');
@@ -172,20 +169,16 @@
 
         thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
 
-        if (json.records.length === 0) {
-          tbody.innerHTML = `<tr><td class="muted">Nenhum jogo encontrado</td></tr>`;
-          return;
-        }
-
         json.records.forEach(rec => {
-          const tds = headers.map(h => `<td>${escapeHtml(formatCell(rec[h], h))}</td>`).join('');
+          const tds = headers.map(h => {
+            const v = rec[h];
+            return `<td>${escapeHtml(formatCell(v))}</td>`;
+          }).join('');
           tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
         });
       } catch (e){
         console.error(e);
-        const thead = document.getElementById('matches-thead');
         const tbody = document.getElementById('matches-tbody');
-        if (thead && thead.innerHTML.trim() === '') thead.innerHTML = '<tr><th>Erro</th></tr>';
         if (tbody) tbody.innerHTML = `<tr><td>Failed to load data</td></tr>`;
       }
     }
@@ -196,23 +189,18 @@
       return [...inPreferred, ...rest];
     }
 
-    // === Formatação de datas para dd-MM-yyyy HH:mm ===
-    function formatCell(v, header){
+    function formatCell(v){
       if (v === null || v === undefined) return '';
-      // Objeto Date vindo do Apps Script
-      if (Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v)) {
-        return fmtDate(v);
-      }
-      // ISO string ou similar
-      if (typeof v === 'string') {
+      if (typeof v === 'string' && v.match(/^\d{4}-\d{2}-\d{2}T/)) {
         const d = new Date(v);
-        if (!isNaN(d)) return fmtDate(d);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth()+1).padStart(2,'0');
+        const dd = String(d.getDate()).padStart(2,'0');
+        const hh = String(d.getHours()).padStart(2,'0');
+        const mi = String(d.getMinutes()).padStart(2,'0');
+        return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
       }
       return String(v);
-    }
-    function fmtDate(d){
-      const pad = n => String(n).padStart(2,'0');
-      return `${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
     function escapeHtml(s){
@@ -224,12 +212,11 @@
         .replaceAll("'","&#039;");
     }
 
-    // inicializações
     document.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().split('T')[0];
       const dateEl = document.getElementById('date');
       if (dateEl) dateEl.value = today;
-      loadMatches();  // carrega a tabela ao abrir
+      loadMatches();
     });
   </script>
 </body>
