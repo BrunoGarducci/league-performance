@@ -23,12 +23,29 @@
   <header><h1>Futsal League Sydney</h1></header>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('player-performance', event)">Player Performance</div>
-    <div class="tab" onclick="switchTab('match-results', event)">Match Results</div>
+    <!-- Match Results primeiro e ativo -->
+    <div class="tab active" onclick="switchTab('match-results', event)">Match Results</div>
+    <div class="tab" onclick="switchTab('player-performance', event)">Player Performance</div>
   </div>
 
-  <!-- PLAYER PERFORMANCE -->
-  <div id="player-performance" class="container form-section" style="display:block;">
+  <!-- MATCH RESULTS primeiro e visível -->
+  <div id="match-results" class="container form-section" style="display:block;">
+    <h2>Match Results</h2>
+    <form onsubmit="return submitForm(event, 'match-results')">
+      <label>League <input type="text" name="League" placeholder="Heffron"/></label>
+      <label>Date <input type="date" id="date" name="Date" required/></label>
+      <label>Round <input type="text" name="Round" required/></label>
+      <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
+      <label>Away Team <input type="text" name="Away Team" required/></label>
+      <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
+      <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
+      <button type="submit">Submit Match</button>
+      <div class="success-message">Match data submitted successfully!</div>
+    </form>
+  </div>
+
+  <!-- PLAYER PERFORMANCE depois e oculto -->
+  <div id="player-performance" class="container form-section" style="display:none;">
     <h2>Player Performance</h2>
     <form onsubmit="return submitForm(event, 'player-performance')">
       <label>Round <input type="text" name="Round" required/></label>
@@ -53,23 +70,6 @@
       <label>Image URL <input type="url" name="URL" placeholder="https://raw.githubusercontent.com/.../player.jpg"/></label>
       <button type="submit">Submit Player</button>
       <div class="success-message">Player data submitted successfully!</div>
-    </form>
-  </div>
-
-  <!-- MATCH RESULTS -->
-  <div id="match-results" class="container form-section" style="display:none;">
-    <h2>Match Results</h2>
-    <form onsubmit="return submitForm(event, 'match-results')">
-      <label>League <input type="text" name="League" placeholder="Heffron"/></label>
-      <label>Date <input type="date" id="date" name="Date" required/></label>
-      <label>Round <input type="text" name="Round" required/></label>
-      <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
-      <label>Away Team <input type="text" name="Away Team" required/></label>
-      <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
-      <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
-      
-      <button type="submit">Submit Match</button>
-      <div class="success-message">Match data submitted successfully!</div>
     </form>
   </div>
 
@@ -98,11 +98,10 @@
         return false;
       }
 
-      // injeta token no corpo
       const body = new URLSearchParams({ ...data, token: TOKEN });
 
       try {
-        const resp = await fetch(url, { method: 'POST', body }); // sem headers custom
+        const resp = await fetch(url, { method: 'POST', body });
         let ok = false;
         try { const j = await resp.json(); ok = j.ok === true; } catch(_) { ok = resp.ok; }
         if (!ok) throw new Error('Falha ao enviar');
