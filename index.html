@@ -27,14 +27,23 @@
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
     .table-wrap { overflow-x:auto; border:1px solid #eee; border-radius:6px; }
 
-    /* controla largura mínima para evitar colunas muito largas */
-    th:nth-child(1), td:nth-child(1) { min-width: 120px; } /* Date */
-    th:nth-child(2), td:nth-child(2) { min-width: 60px; }  /* Round */
-    th:nth-child(3), td:nth-child(3) { min-width: 150px; } /* Home Team */
-    th:nth-child(4), td:nth-child(4) { min-width: 150px; } /* Away Team */
-    th:nth-child(5), td:nth-child(5),
-    th:nth-child(6), td:nth-child(6) { min-width: 80px; text-align:center; } /* Goals */
-    th:nth-child(7), td:nth-child(7) { min-width: 160px; } /* Registration Date */
+    /* largura mínima para colunas comuns de jogos */
+    #matches-table th:nth-child(1), #matches-table td:nth-child(1) { min-width:120px; } /* Date */
+    #matches-table th:nth-child(2), #matches-table td:nth-child(2) { min-width:60px; }  /* Round */
+    #matches-table th:nth-child(3), #matches-table td:nth-child(3) { min-width:150px; } /* Home Team */
+    #matches-table th:nth-child(4), #matches-table td:nth-child(4) { min-width:150px; } /* Away Team */
+    #matches-table th:nth-child(5), #matches-table td:nth-child(5),
+    #matches-table th:nth-child(6), #matches-table td:nth-child(6) { min-width:80px; text-align:center; } /* Goals */
+    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width:160px; } /* Registration */
+
+    /* largura mínima para colunas comuns de players */
+    #players-table th:nth-child(1), #players-table td:nth-child(1) { min-width:70px; }   /* Round */
+    #players-table th:nth-child(2), #players-table td:nth-child(2) { min-width:150px; }  /* Team */
+    #players-table th:nth-child(3), #players-table td:nth-child(3) { min-width:150px; }  /* Player */
+    #players-table th:nth-child(4), #players-table td:nth-child(4) { min-width:120px; }  /* Position */
+    #players-table th, #players-table td { text-align:left; }
+    #players-table .num { text-align:center; min-width:70px; }
+    #players-table th:last-child, #players-table td:last-child { min-width:160px; } /* Registration */
 
     .muted { color:#666; font-size:13px; }
 
@@ -74,7 +83,7 @@
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Matches</h2>
         <div class="muted" style="margin-bottom:.6rem;">Source: <code>match-results</code> (Google Sheets)</div>
-        <div id="matches-table" class="table-wrap">
+        <div class="table-wrap" id="matches-table">
           <table>
             <thead id="matches-thead"></thead>
             <tbody id="matches-tbody"></tbody>
@@ -86,52 +95,73 @@
 
   <!-- PLAYER PERFORMANCE -->
   <div id="player-performance" class="container form-section" style="display:none;">
-    <div class="card" style="max-width:640px;">
-      <h2>Player Performance</h2>
-      <form onsubmit="return submitForm(event, 'player-performance')">
-        <label>Round <input type="text" name="Round" required/></label>
-        <label>Team <input type="text" id="team" name="Team" value="Kairat Sydney FC" required/></label>
-        <label>Player <input type="text" name="Player" required/></label>
-        <label>Position
-          <select name="Position" required>
-            <option>Goalkeeper</option>
-            <option>Defender</option>
-            <option>Winger</option>
-            <option>Pivot</option>
-          </select>
-        </label>
-        <label>Goals <input type="number" id="goals" name="Goals" value="0"/></label>
-        <label>Assists <input type="number" name="Assists" value="0"/></label>
-        <label>Shots <input type="number" name="Shots" value="0"/></label>
-        <label>Shots on Target <input type="number" name="Shots on Target" value="0"/></label>
-        <label>Passes Completed <input type="number" name="Passes Completed" value="0"/></label>
-        <label>Interceptions <input type="number" name="Interceptions" value="0"/></label>
-        <label>Yellow Cards <input type="number" name="Yellow Cards" value="0"/></label>
-        <label>Red Cards <input type="number" name="Red Cards" value="0"/></label>
-        <label>Image URL <input type="url" name="URL" placeholder="https://raw.githubusercontent.com/.../player.jpg"/></label>
-        <button type="submit">Submit Player</button>
-        <div class="success-message">Player data submitted successfully!</div>
-      </form>
+    <div class="two-col">
+      <!-- Formulário -->
+      <div class="card">
+        <h2>Player Performance</h2>
+        <form onsubmit="return submitForm(event, 'player-performance')">
+          <label>Round <input type="text" name="Round" required/></label>
+          <label>Team <input type="text" id="team" name="Team" value="Kairat Sydney FC" required/></label>
+          <label>Player <input type="text" name="Player" required/></label>
+          <label>Position
+            <select name="Position" required>
+              <option>Goalkeeper</option>
+              <option>Defender</option>
+              <option>Winger</option>
+              <option>Pivot</option>
+            </select>
+          </label>
+          <label>Goals <input type="number" id="goals" name="Goals" value="0"/></label>
+          <label>Assists <input type="number" name="Assists" value="0"/></label>
+          <label>Shots <input type="number" name="Shots" value="0"/></label>
+          <label>Shots on Target <input type="number" name="Shots on Target" value="0"/></label>
+          <label>Passes Completed <input type="number" name="Passes Completed" value="0"/></label>
+          <label>Interceptions <input type="number" name="Interceptions" value="0"/></label>
+          <label>Yellow Cards <input type="number" name="Yellow Cards" value="0"/></label>
+          <label>Red Cards <input type="number" name="Red Cards" value="0"/></label>
+          <label>Image URL <input type="url" name="URL" placeholder="https://raw.githubusercontent.com/.../player.jpg"/></label>
+          <button type="submit">Submit Player</button>
+          <div class="success-message">Player data submitted successfully!</div>
+        </form>
+      </div>
+
+      <!-- Tabela -->
+      <div class="card">
+        <h2 style="margin-bottom:.6rem;">Existing Player Performances</h2>
+        <div class="muted" style="margin-bottom:.6rem;">Source: <code>player-performance</code> (Google Sheets)</div>
+        <div class="table-wrap" id="players-table">
+          <table>
+            <thead id="players-thead"></thead>
+            <tbody id="players-tbody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
     /* ENDPOINTS E TOKEN */
     const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbztDzuSKmjMGgYB2po9cENEKT2VBeUoUpRGm2jeT1vS5rdRdoxnGVYHC6LEh8kk95RR/exec';
-    const ENDPOINT_PLAYERS = ''; 
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI';
+    const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbwPfDhIPJc65-s9DQIaxpgLEZ5Vk9OdvLTQ0zk1BzmRnTvK_ntG41jCBoAWAgQwUcl2HQ/exec';
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // deve ser igual ao usado em ambos Apps Script
 
     function switchTab(tabId, ev){
       document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
       document.getElementById(tabId).style.display = 'block';
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       if (ev && ev.target) ev.target.classList.add('active');
+
+      // carrega tabela da aba ativa
+      if (tabId === 'match-results') loadMatches();
+      if (tabId === 'player-performance') loadPlayers();
     }
 
+    // envio form como x-www-form-urlencoded para evitar preflight
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
       const data = Object.fromEntries(new FormData(form).entries());
+
       const url = (formType === 'match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
       if (!url){ alert('Endpoint não configurado para este formulário.'); return false; }
 
@@ -146,10 +176,12 @@
         const success = form.querySelector('.success-message');
         if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 4000); }
 
+        // reset mínimo
         form.reset();
         if (formType === 'player-performance'){
           document.getElementById('team').value = 'Kairat Sydney FC';
           document.getElementById('goals').value = '0';
+          loadPlayers();
         } else {
           document.getElementById('homeTeam').value = 'Kairat Sydney FC';
           const today = new Date().toISOString().split('T')[0];
@@ -162,32 +194,43 @@
       return false;
     }
 
+    /** ====== TABELAS ====== **/
     async function loadMatches(){
+      await loadAndRender(ENDPOINT_MATCHES, 'matches-thead', 'matches-tbody',
+        ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date']);
+    }
+
+    async function loadPlayers(){
+      await loadAndRender(ENDPOINT_PLAYERS, 'players-thead', 'players-tbody',
+        ['Round','Team','Player','Position','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','URL','Registration Date']);
+    }
+
+    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder){
       try {
-        const resp = await fetch(ENDPOINT_MATCHES, { method:'GET' });
+        const resp = await fetch(endpoint, { method:'GET' });
         const json = await resp.json();
-        if (!json.ok) throw new Error(json.error || 'Erro ao obter dados');
+        if (!json.ok || !Array.isArray(json.headers) || !Array.isArray(json.records)) {
+          throw new Error(json.error || 'Formato inválido de resposta');
+        }
 
-        const thead = document.getElementById('matches-thead');
-        const tbody = document.getElementById('matches-tbody');
-        thead.innerHTML = '';
-        tbody.innerHTML = '';
+        const thead = document.getElementById(theadId);
+        const tbody = document.getElementById(tbodyId);
+        thead.innerHTML = ''; tbody.innerHTML = '';
 
-        const preferred = ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date'];
-        const headers = reorderHeaders(json.headers, preferred);
-
+        const headers = reorderHeaders(json.headers, preferredOrder);
         thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
 
         json.records.forEach(rec => {
           const tds = headers.map(h => {
             const v = rec[h];
-            return `<td>${escapeHtml(formatCell(v))}</td>`;
+            const cls = isNumeric(v) ? ' class="num"' : '';
+            return `<td${cls}>${escapeHtml(formatCell(v))}</td>`;
           }).join('');
           tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
         });
       } catch (e){
         console.error(e);
-        const tbody = document.getElementById('matches-tbody');
+        const tbody = document.getElementById(tbodyId);
         if (tbody) tbody.innerHTML = `<tr><td>Failed to load data</td></tr>`;
       }
     }
@@ -198,16 +241,23 @@
       return [...inPreferred, ...rest];
     }
 
+    function isNumeric(v){
+      if (v === null || v === undefined) return false;
+      const n = Number(v);
+      return Number.isFinite(n);
+    }
+
     function formatCell(v){
-      if (!v) return '';
+      if (v === null || v === undefined) return '';
+      // datas ISO ou serializadas pelo Apps Script
       if (!isNaN(Date.parse(v))) {
         const d = new Date(v);
         const yyyy = d.getFullYear();
         const mm = String(d.getMonth()+1).padStart(2,'0');
         const dd = String(d.getDate()).padStart(2,'0');
         const hh = String(d.getHours()).padStart(2,'0');
-        const min = String(d.getMinutes()).padStart(2,'0');
-        return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
+        const mi = String(d.getMinutes()).padStart(2,'0');
+        return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
       }
       return String(v);
     }
@@ -221,11 +271,13 @@
         .replaceAll("'","&#039;");
     }
 
+    // inicialização
     document.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().split('T')[0];
       const dateEl = document.getElementById('date');
       if (dateEl) dateEl.value = today;
-      loadMatches();
+      loadMatches();      // carrega tabela de jogos ao abrir
+      // loadPlayers();   // carregará quando trocar para a aba Player Performance
     });
   </script>
 </body>
