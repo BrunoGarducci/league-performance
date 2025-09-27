@@ -27,32 +27,23 @@
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
     .table-wrap { overflow-x:auto; border:1px solid #eee; border-radius:6px; }
 
-    /* Larguras mínimas para tabela de jogos */
-    #matches-table th:nth-child(1), #matches-table td:nth-child(1) { min-width: 120px; } /* Date */
-    #matches-table th:nth-child(2), #matches-table td:nth-child(2) { min-width: 60px; }  /* Round */
-    #matches-table th:nth-child(3), #matches-table td:nth-child(3),
-    #matches-table th:nth-child(4), #matches-table td:nth-child(4) { min-width: 150px; } /* Teams */
+    /* largura mínima para colunas comuns de jogos */
+    #matches-table th:nth-child(1), #matches-table td:nth-child(1) { min-width:120px; } /* Date */
+    #matches-table th:nth-child(2), #matches-table td:nth-child(2) { min-width:60px; }  /* Round */
+    #matches-table th:nth-child(3), #matches-table td:nth-child(3) { min-width:150px; } /* Home Team */
+    #matches-table th:nth-child(4), #matches-table td:nth-child(4) { min-width:150px; } /* Away Team */
     #matches-table th:nth-child(5), #matches-table td:nth-child(5),
-    #matches-table th:nth-child(6), #matches-table td:nth-child(6) { min-width: 80px; text-align:center; } /* Goals */
-    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width: 160px; } /* Registration Date */
+    #matches-table th:nth-child(6), #matches-table td:nth-child(6) { min-width:80px; text-align:center; } /* Goals */
+    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width:160px; } /* Registration */
 
-    /* Larguras mínimas para tabela de jogadores */
-    #players-table th:nth-child(1), #players-table td:nth-child(1) { min-width: 60px; }   /* Round */
-    #players-table th:nth-child(2), #players-table td:nth-child(2) { min-width: 150px; }  /* Team */
-    #players-table th:nth-child(3), #players-table td:nth-child(3) { min-width: 140px; }  /* Player */
-    #players-table th:nth-child(4), #players-table td:nth-child(4) { min-width: 110px; }  /* Position */
-    #players-table th:nth-child(5), #players-table td:nth-child(5),
-    #players-table th:nth-child(6), #players-table td:nth-child(6),
-    #players-table th:nth-child(7), #players-table td:nth-child(7),
-    #players-table th:nth-child(8), #players-table td:nth-child(8),
-    #players-table th:nth-child(9), #players-table td:nth-child(9),
-    #players-table th:nth-child(10), #players-table td:nth-child(10),
-    #players-table th:nth-child(11), #players-table td:nth-child(11),
-    #players-table th:nth-child(12), #players-table td:nth-child(12) { min-width: 80px; text-align:center; } /* métricas */
-    #players-table th:nth-child(13), #players-table td:nth-child(13) { min-width: 80px; text-align:center; } /* URL (avatar) */
-    #players-table th:nth-child(14), #players-table td:nth-child(14) { min-width: 160px; } /* Registration Date */
-
-    .avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
+    /* largura mínima para colunas comuns de players */
+    #players-table th:nth-child(1), #players-table td:nth-child(1) { min-width:70px; }   /* Round */
+    #players-table th:nth-child(2), #players-table td:nth-child(2) { min-width:150px; }  /* Team */
+    #players-table th:nth-child(3), #players-table td:nth-child(3) { min-width:150px; }  /* Player */
+    #players-table th:nth-child(4), #players-table td:nth-child(4) { min-width:120px; }  /* Position */
+    #players-table th, #players-table td { text-align:left; }
+    #players-table .num { text-align:center; min-width:70px; }
+    #players-table th:last-child, #players-table td:last-child { min-width:160px; } /* Registration */
 
     .muted { color:#666; font-size:13px; }
 
@@ -72,7 +63,7 @@
   <!-- MATCH RESULTS -->
   <div id="match-results" class="container form-section" style="display:block;">
     <div class="two-col">
-      <!-- Form -->
+      <!-- Formulário -->
       <div class="card">
         <h2>Match Results</h2>
         <form onsubmit="return submitForm(event, 'match-results')">
@@ -92,8 +83,8 @@
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Matches</h2>
         <div class="muted" style="margin-bottom:.6rem;">Source: <code>match-results</code> (Google Sheets)</div>
-        <div class="table-wrap">
-          <table id="matches-table">
+        <div class="table-wrap" id="matches-table">
+          <table>
             <thead id="matches-thead"></thead>
             <tbody id="matches-tbody"></tbody>
           </table>
@@ -105,7 +96,7 @@
   <!-- PLAYER PERFORMANCE -->
   <div id="player-performance" class="container form-section" style="display:none;">
     <div class="two-col">
-      <!-- Form -->
+      <!-- Formulário -->
       <div class="card">
         <h2>Player Performance</h2>
         <form onsubmit="return submitForm(event, 'player-performance')">
@@ -138,8 +129,8 @@
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Player Performances</h2>
         <div class="muted" style="margin-bottom:.6rem;">Source: <code>player-performance</code> (Google Sheets)</div>
-        <div class="table-wrap">
-          <table id="players-table">
+        <div class="table-wrap" id="players-table">
+          <table>
             <thead id="players-thead"></thead>
             <tbody id="players-tbody"></tbody>
           </table>
@@ -152,7 +143,7 @@
     /* ENDPOINTS E TOKEN */
     const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbztDzuSKmjMGgYB2po9cENEKT2VBeUoUpRGm2jeT1vS5rdRdoxnGVYHC6LEh8kk95RR/exec';
     const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbwPfDhIPJc65-s9DQIaxpgLEZ5Vk9OdvLTQ0zk1BzmRnTvK_ntG41jCBoAWAgQwUcl2HQ/exec';
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI';
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // deve ser igual ao usado em ambos Apps Script
 
     function switchTab(tabId, ev){
       document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
@@ -160,15 +151,17 @@
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       if (ev && ev.target) ev.target.classList.add('active');
 
+      // carrega tabela da aba ativa
       if (tabId === 'match-results') loadMatches();
       if (tabId === 'player-performance') loadPlayers();
     }
 
-    // envia como application/x-www-form-urlencoded para evitar preflight
+    // envio form como x-www-form-urlencoded para evitar preflight
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
       const data = Object.fromEntries(new FormData(form).entries());
+
       const url = (formType === 'match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
       if (!url){ alert('Endpoint não configurado para este formulário.'); return false; }
 
@@ -183,6 +176,7 @@
         const success = form.querySelector('.success-message');
         if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 4000); }
 
+        // reset mínimo
         form.reset();
         if (formType === 'player-performance'){
           document.getElementById('team').value = 'Kairat Sydney FC';
@@ -200,68 +194,44 @@
       return false;
     }
 
-    // Tabela de jogos
+    /** ====== TABELAS ====== **/
     async function loadMatches(){
+      await loadAndRender(ENDPOINT_MATCHES, 'matches-thead', 'matches-tbody',
+        ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date']);
+    }
+
+    async function loadPlayers(){
+      await loadAndRender(ENDPOINT_PLAYERS, 'players-thead', 'players-tbody',
+        ['Round','Team','Player','Position','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','URL','Registration Date']);
+    }
+
+    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder){
       try {
-        const resp = await fetch(ENDPOINT_MATCHES, { method:'GET' });
+        const resp = await fetch(endpoint, { method:'GET' });
         const json = await resp.json();
-        if (!json.ok) throw new Error(json.error || 'Erro ao obter dados');
+        if (!json.ok || !Array.isArray(json.headers) || !Array.isArray(json.records)) {
+          throw new Error(json.error || 'Formato inválido de resposta');
+        }
 
-        const thead = document.getElementById('matches-thead');
-        const tbody = document.getElementById('matches-tbody');
-        thead.innerHTML = '';
-        tbody.innerHTML = '';
+        const thead = document.getElementById(theadId);
+        const tbody = document.getElementById(tbodyId);
+        thead.innerHTML = ''; tbody.innerHTML = '';
 
-        const preferred = ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date'];
-        const headers = reorderHeaders(json.headers, preferred);
-
+        const headers = reorderHeaders(json.headers, preferredOrder);
         thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
 
         json.records.forEach(rec => {
           const tds = headers.map(h => {
             const v = rec[h];
-            return `<td>${escapeHtml(formatCell(v))}</td>`;
+            const cls = isNumeric(v) ? ' class="num"' : '';
+            return `<td${cls}>${escapeHtml(formatCell(v))}</td>`;
           }).join('');
           tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
         });
       } catch (e){
         console.error(e);
-        document.getElementById('matches-tbody').innerHTML = `<tr><td>Failed to load data</td></tr>`;
-      }
-    }
-
-    // Tabela de jogadores
-    async function loadPlayers(){
-      try {
-        const resp = await fetch(ENDPOINT_PLAYERS, { method:'GET' });
-        const json = await resp.json();
-        if (!json.ok) throw new Error(json.error || 'Erro ao obter dados');
-
-        const thead = document.getElementById('players-thead');
-        const tbody = document.getElementById('players-tbody');
-        thead.innerHTML = '';
-        tbody.innerHTML = '';
-
-        const preferred = [
-          'Round','Team','Player','Position','Goals','Assists','Shots','Shots on Target',
-          'Passes Completed','Interceptions','Yellow Cards','Red Cards','URL','Registration Date'
-        ];
-        const headers = reorderHeaders(json.headers, preferred);
-        thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
-
-        json.records.forEach(rec => {
-          const tds = headers.map(h => {
-            let v = rec[h];
-            if (h === 'URL' && v) {
-              return `<td><img class="avatar" src="${String(v)}" alt="player"/></td>`;
-            }
-            return `<td>${escapeHtml(formatCell(v))}</td>`;
-          }).join('');
-          tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
-        });
-      } catch (e){
-        console.error(e);
-        document.getElementById('players-tbody').innerHTML = `<tr><td>Failed to load data</td></tr>`;
+        const tbody = document.getElementById(tbodyId);
+        if (tbody) tbody.innerHTML = `<tr><td>Failed to load data</td></tr>`;
       }
     }
 
@@ -271,17 +241,23 @@
       return [...inPreferred, ...rest];
     }
 
+    function isNumeric(v){
+      if (v === null || v === undefined) return false;
+      const n = Number(v);
+      return Number.isFinite(n);
+    }
+
     function formatCell(v){
       if (v === null || v === undefined) return '';
-      // Datas em texto ISO também serão formatadas
+      // datas ISO ou serializadas pelo Apps Script
       if (!isNaN(Date.parse(v))) {
         const d = new Date(v);
         const yyyy = d.getFullYear();
         const mm = String(d.getMonth()+1).padStart(2,'0');
         const dd = String(d.getDate()).padStart(2,'0');
         const hh = String(d.getHours()).padStart(2,'0');
-        const min = String(d.getMinutes()).padStart(2,'0');
-        return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
+        const mi = String(d.getMinutes()).padStart(2,'0');
+        return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
       }
       return String(v);
     }
@@ -300,7 +276,8 @@
       const today = new Date().toISOString().split('T')[0];
       const dateEl = document.getElementById('date');
       if (dateEl) dateEl.value = today;
-      loadMatches(); // aba inicial
+      loadMatches();      // carrega tabela de jogos ao abrir
+      // loadPlayers();   // carregará quando trocar para a aba Player Performance
     });
   </script>
 </body>
