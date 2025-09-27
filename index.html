@@ -26,21 +26,31 @@
     th, td { border-bottom:1px solid #eee; padding:.45rem .5rem; text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
 
-    /* colunas proporcionais */
-    th:nth-child(1), td:nth-child(1) { width: 60px; }   /* Round */
-    th:nth-child(2), td:nth-child(2) { width: 130px; }  /* Team */
-    th:nth-child(3), td:nth-child(3) { width: 120px; }  /* Player */
-    th:nth-child(4), td:nth-child(4) { width: 90px; }   /* Position */
-    th:nth-child(5), td:nth-child(5),
-    th:nth-child(6), td:nth-child(6),
-    th:nth-child(7), td:nth-child(7),
-    th:nth-child(8), td:nth-child(8),
-    th:nth-child(9), td:nth-child(9),
-    th:nth-child(10), td:nth-child(10),
-    th:nth-child(11), td:nth-child(11),
-    th:nth-child(12), td:nth-child(12) { width: 70px; text-align:center; } /* estatísticas */
-    th:nth-child(13), td:nth-child(13) { width: 100px; } /* URL */
-    th:nth-child(14), td:nth-child(14) { width: 120px; } /* Registration Date */
+    /* --- Ajustes Match Results --- */
+    #matches-table th:nth-child(1), #matches-table td:nth-child(1) { width: 100px; } /* Date */
+    #matches-table th:nth-child(2), #matches-table td:nth-child(2) { width: 60px; }  /* Round */
+    #matches-table th:nth-child(3), #matches-table td:nth-child(3) { width: 140px; } /* Home Team */
+    #matches-table th:nth-child(4), #matches-table td:nth-child(4) { width: 140px; } /* Away Team */
+    #matches-table th:nth-child(5), #matches-table td:nth-child(5),
+    #matches-table th:nth-child(6), #matches-table td:nth-child(6) { width: 60px; text-align:center; }
+    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { width: 120px; } /* League */
+    #matches-table th:nth-child(8), #matches-table td:nth-child(8) { width: 130px; } /* Registration Date */
+
+    /* --- Ajustes Player Performance --- */
+    #players-table th:nth-child(1), #players-table td:nth-child(1) { width: 60px; }   /* Round */
+    #players-table th:nth-child(2), #players-table td:nth-child(2) { width: 130px; }  /* Team */
+    #players-table th:nth-child(3), #players-table td:nth-child(3) { width: 120px; }  /* Player */
+    #players-table th:nth-child(4), #players-table td:nth-child(4) { width: 90px; }   /* Position */
+    #players-table th:nth-child(5), #players-table td:nth-child(5),
+    #players-table th:nth-child(6), #players-table td:nth-child(6),
+    #players-table th:nth-child(7), #players-table td:nth-child(7),
+    #players-table th:nth-child(8), #players-table td:nth-child(8),
+    #players-table th:nth-child(9), #players-table td:nth-child(9),
+    #players-table th:nth-child(10), #players-table td:nth-child(10),
+    #players-table th:nth-child(11), #players-table td:nth-child(11),
+    #players-table th:nth-child(12), #players-table td:nth-child(12) { width: 70px; text-align:center; } /* estatísticas */
+    #players-table th:nth-child(13), #players-table td:nth-child(13) { width: 100px; } /* URL */
+    #players-table th:nth-child(14), #players-table td:nth-child(14) { width: 130px; } /* Registration Date */
 
     .muted { color:#666; font-size:12px; }
 
@@ -57,10 +67,39 @@
     <div class="tab" onclick="switchTab('player-performance', event)">Player Performance</div>
   </div>
 
-  <!-- PLAYER PERFORMANCE -->
-  <div id="player-performance" class="container form-section" style="display:block;">
+  <!-- MATCH RESULTS -->
+  <div id="match-results" class="container form-section" style="display:block;">
     <div class="two-col">
-      <!-- Form -->
+      <div class="card">
+        <h2>Match Results</h2>
+        <form onsubmit="return submitForm(event, 'match-results')">
+          <label>League <input type="text" name="League" placeholder="Heffron"/></label>
+          <label>Date <input type="date" id="date" name="Date" required/></label>
+          <label>Round <input type="text" name="Round" required/></label>
+          <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
+          <label>Away Team <input type="text" name="Away Team" required/></label>
+          <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
+          <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
+          <button type="submit">Submit Match</button>
+          <div class="success-message">Match data submitted successfully!</div>
+        </form>
+      </div>
+      <div class="card">
+        <h2 style="margin-bottom:.6rem;">Existing Matches</h2>
+        <div class="muted" style="margin-bottom:.6rem;">Source: <code>match-results</code> (Google Sheets)</div>
+        <div id="matches-table" class="table-wrap">
+          <table>
+            <thead id="matches-thead"></thead>
+            <tbody id="matches-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYER PERFORMANCE -->
+  <div id="player-performance" class="container form-section" style="display:none;">
+    <div class="two-col">
       <div class="card">
         <h2>Player Performance</h2>
         <form onsubmit="return submitForm(event, 'player-performance')">
@@ -88,8 +127,6 @@
           <div class="success-message">Player data submitted successfully!</div>
         </form>
       </div>
-
-      <!-- Table -->
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Player Performances</h2>
         <div class="muted" style="margin-bottom:.6rem;">Source: <code>player-performance</code> (Google Sheets)</div>
@@ -104,28 +141,68 @@
   </div>
 
   <script>
+    const ENDPOINT_MATCHES = "SUA_URL_MATCH_RESULTS";
     const ENDPOINT_PLAYERS = "https://script.google.com/macros/s/AKfycbwPfDhIPJc65-s9DQIaxpgLEZ5Vk9OdvLTQ0zk1BzmRnTvK_ntG41jCBoAWAgQwUcl2HQ/exec";
     const TOKEN = "SEU_TOKEN_FORTE_AQUI";
+
+    function switchTab(tabId, ev){
+      document.querySelectorAll(".form-section").forEach(s => s.style.display = "none");
+      document.getElementById(tabId).style.display = "block";
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      if (ev && ev.target) ev.target.classList.add("active");
+    }
 
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
       const data = Object.fromEntries(new FormData(form).entries());
+      const url = (formType === "match-results") ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
       const body = new URLSearchParams({ ...data, token: TOKEN });
 
       try {
-        const resp = await fetch(ENDPOINT_PLAYERS, { method:"POST", body });
+        const resp = await fetch(url, { method:"POST", body });
         let ok = false;
         try { const j = await resp.json(); ok = j.ok === true; } catch(_) { ok = resp.ok; }
-        if (!ok) throw new Error("Erro ao enviar");
+        if (!ok) throw new Error("Falha ao enviar");
 
         form.querySelector(".success-message").style.display = "block";
         setTimeout(()=> form.querySelector(".success-message").style.display="none", 4000);
         form.reset();
-        document.getElementById("team").value = "Kairat Sydney FC";
-        loadPlayers();
-      } catch(e){ alert("Falhou: " + e.message); }
+
+        if (formType === "match-results") {
+          document.getElementById("homeTeam").value = "Kairat Sydney FC";
+          const today = new Date().toISOString().split("T")[0];
+          document.getElementById("date").value = today;
+          loadMatches();
+        } else {
+          document.getElementById("team").value = "Kairat Sydney FC";
+          loadPlayers();
+        }
+      } catch (err){
+        alert("Erro: " + err.message);
+      }
       return false;
+    }
+
+    async function loadMatches(){
+      try {
+        const resp = await fetch(ENDPOINT_MATCHES);
+        const json = await resp.json();
+        if (!json.ok) throw new Error(json.error || "Erro ao obter dados");
+
+        const headers = json.headers;
+        const thead = document.getElementById("matches-thead");
+        const tbody = document.getElementById("matches-tbody");
+        thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join("")}</tr>`;
+        tbody.innerHTML = "";
+
+        json.records.forEach(rec => {
+          const row = headers.map(h=> `<td>${escapeHtml(formatCell(rec[h]))}</td>`).join("");
+          tbody.insertAdjacentHTML("beforeend", `<tr>${row}</tr>`);
+        });
+      } catch (e){
+        document.getElementById("matches-tbody").innerHTML = `<tr><td colspan="10">Failed to load data</td></tr>`;
+      }
     }
 
     async function loadPlayers(){
@@ -141,10 +218,7 @@
         tbody.innerHTML = "";
 
         json.records.forEach(rec => {
-          const row = headers.map(h=>{
-            const v = rec[h];
-            return `<td>${escapeHtml(formatCell(v))}</td>`;
-          }).join("");
+          const row = headers.map(h=> `<td>${escapeHtml(formatCell(rec[h]))}</td>`).join("");
           tbody.insertAdjacentHTML("beforeend", `<tr>${row}</tr>`);
         });
       } catch(e){
@@ -175,7 +249,13 @@
         .replace(/'/g,"&#039;");
     }
 
-    document.addEventListener("DOMContentLoaded", loadPlayers);
+    document.addEventListener("DOMContentLoaded", () => {
+      const today = new Date().toISOString().split("T")[0];
+      const dateEl = document.getElementById("date");
+      if (dateEl) dateEl.value = today;
+      loadMatches();
+      loadPlayers();
+    });
   </script>
 </body>
 </html>
