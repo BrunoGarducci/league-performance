@@ -12,7 +12,7 @@
     .tab.active { background:#ddd; font-weight:bold; }
 
     .container { max-width:1400px; margin:2rem auto; }
-    .two-col { display:grid; grid-template-columns: 1fr 2.5fr; gap:24px; }
+    .two-col { display:grid; grid-template-columns: 1fr 2fr; gap:24px; }
     .card { background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:1.5rem; }
 
     form { display:flex; flex-direction:column; }
@@ -22,39 +22,27 @@
     button:hover { background:#0b5ed7; }
     .success-message { color:green; display:none; margin-top:12px; }
 
-    table { width:100%; border-collapse:collapse; font-size:14px; table-layout:auto; }
-    th, td { border-bottom:1px solid #eee; padding:.55rem .6rem; text-align:left; white-space:nowrap; }
+    table { width:100%; border-collapse:collapse; font-size:13px; table-layout:fixed; }
+    th, td { border-bottom:1px solid #eee; padding:.45rem .5rem; text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
-    .table-wrap { overflow-x:auto; border:1px solid #eee; border-radius:6px; }
 
-    /* Larguras mínimas para tabela de jogos */
-    #matches-table th:nth-child(1), #matches-table td:nth-child(1) { min-width: 120px; } /* Date */
-    #matches-table th:nth-child(2), #matches-table td:nth-child(2) { min-width: 60px; }  /* Round */
-    #matches-table th:nth-child(3), #matches-table td:nth-child(3),
-    #matches-table th:nth-child(4), #matches-table td:nth-child(4) { min-width: 150px; } /* Teams */
-    #matches-table th:nth-child(5), #matches-table td:nth-child(5),
-    #matches-table th:nth-child(6), #matches-table td:nth-child(6) { min-width: 80px; text-align:center; } /* Goals */
-    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width: 160px; } /* Registration Date */
+    /* colunas proporcionais */
+    th:nth-child(1), td:nth-child(1) { width: 60px; }   /* Round */
+    th:nth-child(2), td:nth-child(2) { width: 130px; }  /* Team */
+    th:nth-child(3), td:nth-child(3) { width: 120px; }  /* Player */
+    th:nth-child(4), td:nth-child(4) { width: 90px; }   /* Position */
+    th:nth-child(5), td:nth-child(5),
+    th:nth-child(6), td:nth-child(6),
+    th:nth-child(7), td:nth-child(7),
+    th:nth-child(8), td:nth-child(8),
+    th:nth-child(9), td:nth-child(9),
+    th:nth-child(10), td:nth-child(10),
+    th:nth-child(11), td:nth-child(11),
+    th:nth-child(12), td:nth-child(12) { width: 70px; text-align:center; } /* estatísticas */
+    th:nth-child(13), td:nth-child(13) { width: 100px; } /* URL */
+    th:nth-child(14), td:nth-child(14) { width: 120px; } /* Registration Date */
 
-    /* Larguras mínimas para tabela de jogadores */
-    #players-table th:nth-child(1), #players-table td:nth-child(1) { min-width: 60px; }   /* Round */
-    #players-table th:nth-child(2), #players-table td:nth-child(2) { min-width: 150px; }  /* Team */
-    #players-table th:nth-child(3), #players-table td:nth-child(3) { min-width: 140px; }  /* Player */
-    #players-table th:nth-child(4), #players-table td:nth-child(4) { min-width: 110px; }  /* Position */
-    #players-table th:nth-child(5), #players-table td:nth-child(5),
-    #players-table th:nth-child(6), #players-table td:nth-child(6),
-    #players-table th:nth-child(7), #players-table td:nth-child(7),
-    #players-table th:nth-child(8), #players-table td:nth-child(8),
-    #players-table th:nth-child(9), #players-table td:nth-child(9),
-    #players-table th:nth-child(10), #players-table td:nth-child(10),
-    #players-table th:nth-child(11), #players-table td:nth-child(11),
-    #players-table th:nth-child(12), #players-table td:nth-child(12) { min-width: 80px; text-align:center; } /* métricas */
-    #players-table th:nth-child(13), #players-table td:nth-child(13) { min-width: 80px; text-align:center; } /* URL (avatar) */
-    #players-table th:nth-child(14), #players-table td:nth-child(14) { min-width: 160px; } /* Registration Date */
-
-    .avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
-
-    .muted { color:#666; font-size:13px; }
+    .muted { color:#666; font-size:12px; }
 
     @media (max-width: 1000px){
       .two-col { grid-template-columns: 1fr; }
@@ -69,41 +57,8 @@
     <div class="tab" onclick="switchTab('player-performance', event)">Player Performance</div>
   </div>
 
-  <!-- MATCH RESULTS -->
-  <div id="match-results" class="container form-section" style="display:block;">
-    <div class="two-col">
-      <!-- Form -->
-      <div class="card">
-        <h2>Match Results</h2>
-        <form onsubmit="return submitForm(event, 'match-results')">
-          <label>League <input type="text" name="League" placeholder="Heffron"/></label>
-          <label>Date <input type="date" id="date" name="Date" required/></label>
-          <label>Round <input type="text" name="Round" required/></label>
-          <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
-          <label>Away Team <input type="text" name="Away Team" required/></label>
-          <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
-          <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
-          <button type="submit">Submit Match</button>
-          <div class="success-message">Match data submitted successfully!</div>
-        </form>
-      </div>
-
-      <!-- Tabela -->
-      <div class="card">
-        <h2 style="margin-bottom:.6rem;">Existing Matches</h2>
-        <div class="muted" style="margin-bottom:.6rem;">Source: <code>match-results</code> (Google Sheets)</div>
-        <div class="table-wrap">
-          <table id="matches-table">
-            <thead id="matches-thead"></thead>
-            <tbody id="matches-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- PLAYER PERFORMANCE -->
-  <div id="player-performance" class="container form-section" style="display:none;">
+  <div id="player-performance" class="container form-section" style="display:block;">
     <div class="two-col">
       <!-- Form -->
       <div class="card">
@@ -120,7 +75,7 @@
               <option>Pivot</option>
             </select>
           </label>
-          <label>Goals <input type="number" id="goals" name="Goals" value="0"/></label>
+          <label>Goals <input type="number" name="Goals" value="0"/></label>
           <label>Assists <input type="number" name="Assists" value="0"/></label>
           <label>Shots <input type="number" name="Shots" value="0"/></label>
           <label>Shots on Target <input type="number" name="Shots on Target" value="0"/></label>
@@ -134,12 +89,12 @@
         </form>
       </div>
 
-      <!-- Tabela -->
+      <!-- Table -->
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Player Performances</h2>
         <div class="muted" style="margin-bottom:.6rem;">Source: <code>player-performance</code> (Google Sheets)</div>
-        <div class="table-wrap">
-          <table id="players-table">
+        <div id="players-table" class="table-wrap">
+          <table>
             <thead id="players-thead"></thead>
             <tbody id="players-tbody"></tbody>
           </table>
@@ -149,159 +104,78 @@
   </div>
 
   <script>
-    /* ENDPOINTS E TOKEN */
-    const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbztDzuSKmjMGgYB2po9cENEKT2VBeUoUpRGm2jeT1vS5rdRdoxnGVYHC6LEh8kk95RR/exec';
-    const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbyFt5lZTHN7eW3XqIparGjFBZ1P6HtV41JsOrJMfu-695oky3dLOs0hpJN_CUALyMtN/exec';
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI';
+    const ENDPOINT_PLAYERS = "https://script.google.com/macros/s/AKfycbwPfDhIPJc65-s9DQIaxpgLEZ5Vk9OdvLTQ0zk1BzmRnTvK_ntG41jCBoAWAgQwUcl2HQ/exec";
+    const TOKEN = "SEU_TOKEN_FORTE_AQUI";
 
-    function switchTab(tabId, ev){
-      document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
-      document.getElementById(tabId).style.display = 'block';
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      if (ev && ev.target) ev.target.classList.add('active');
-
-      if (tabId === 'match-results') loadMatches();
-      if (tabId === 'player-performance') loadPlayers();
-    }
-
-    // envia como application/x-www-form-urlencoded para evitar preflight
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
       const data = Object.fromEntries(new FormData(form).entries());
-      const url = (formType === 'match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
-      if (!url){ alert('Endpoint não configurado para este formulário.'); return false; }
-
       const body = new URLSearchParams({ ...data, token: TOKEN });
 
       try {
-        const resp = await fetch(url, { method:'POST', body });
+        const resp = await fetch(ENDPOINT_PLAYERS, { method:"POST", body });
         let ok = false;
         try { const j = await resp.json(); ok = j.ok === true; } catch(_) { ok = resp.ok; }
-        if (!ok) throw new Error('Falha ao enviar');
+        if (!ok) throw new Error("Erro ao enviar");
 
-        const success = form.querySelector('.success-message');
-        if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 4000); }
-
+        form.querySelector(".success-message").style.display = "block";
+        setTimeout(()=> form.querySelector(".success-message").style.display="none", 4000);
         form.reset();
-        if (formType === 'player-performance'){
-          document.getElementById('team').value = 'Kairat Sydney FC';
-          document.getElementById('goals').value = '0';
-          loadPlayers();
-        } else {
-          document.getElementById('homeTeam').value = 'Kairat Sydney FC';
-          const today = new Date().toISOString().split('T')[0];
-          document.getElementById('date').value = today;
-          loadMatches();
-        }
-      } catch (err){
-        alert('Falhou: ' + err.message);
-      }
+        document.getElementById("team").value = "Kairat Sydney FC";
+        loadPlayers();
+      } catch(e){ alert("Falhou: " + e.message); }
       return false;
     }
 
-    // Tabela de jogos
-    async function loadMatches(){
-      try {
-        const resp = await fetch(ENDPOINT_MATCHES, { method:'GET' });
-        const json = await resp.json();
-        if (!json.ok) throw new Error(json.error || 'Erro ao obter dados');
-
-        const thead = document.getElementById('matches-thead');
-        const tbody = document.getElementById('matches-tbody');
-        thead.innerHTML = '';
-        tbody.innerHTML = '';
-
-        const preferred = ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date'];
-        const headers = reorderHeaders(json.headers, preferred);
-
-        thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
-
-        json.records.forEach(rec => {
-          const tds = headers.map(h => {
-            const v = rec[h];
-            return `<td>${escapeHtml(formatCell(v))}</td>`;
-          }).join('');
-          tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
-        });
-      } catch (e){
-        console.error(e);
-        document.getElementById('matches-tbody').innerHTML = `<tr><td>Failed to load data</td></tr>`;
-      }
-    }
-
-    // Tabela de jogadores
     async function loadPlayers(){
       try {
-        const resp = await fetch(ENDPOINT_PLAYERS, { method:'GET' });
+        const resp = await fetch(ENDPOINT_PLAYERS);
         const json = await resp.json();
-        if (!json.ok) throw new Error(json.error || 'Erro ao obter dados');
+        if (!json.ok) throw new Error("Erro ao carregar");
 
-        const thead = document.getElementById('players-thead');
-        const tbody = document.getElementById('players-tbody');
-        thead.innerHTML = '';
-        tbody.innerHTML = '';
-
-        const preferred = [
-          'Round','Team','Player','Position','Goals','Assists','Shots','Shots on Target',
-          'Passes Completed','Interceptions','Yellow Cards','Red Cards','URL','Registration Date'
-        ];
-        const headers = reorderHeaders(json.headers, preferred);
-        thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
+        const headers = json.headers;
+        const thead = document.getElementById("players-thead");
+        const tbody = document.getElementById("players-tbody");
+        thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join("")}</tr>`;
+        tbody.innerHTML = "";
 
         json.records.forEach(rec => {
-          const tds = headers.map(h => {
-            let v = rec[h];
-            if (h === 'URL' && v) {
-              return `<td><img class="avatar" src="${String(v)}" alt="player"/></td>`;
-            }
+          const row = headers.map(h=>{
+            const v = rec[h];
             return `<td>${escapeHtml(formatCell(v))}</td>`;
-          }).join('');
-          tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
+          }).join("");
+          tbody.insertAdjacentHTML("beforeend", `<tr>${row}</tr>`);
         });
-      } catch (e){
-        console.error(e);
-        document.getElementById('players-tbody').innerHTML = `<tr><td>Failed to load data</td></tr>`;
+      } catch(e){
+        document.getElementById("players-tbody").innerHTML = `<tr><td colspan="20">Failed to load data</td></tr>`;
       }
-    }
-
-    function reorderHeaders(headers, preferred){
-      const inPreferred = preferred.filter(h => headers.includes(h));
-      const rest = headers.filter(h => !preferred.includes(h));
-      return [...inPreferred, ...rest];
     }
 
     function formatCell(v){
-      if (v === null || v === undefined) return '';
-      // Datas em texto ISO também serão formatadas
-      if (!isNaN(Date.parse(v))) {
+      if (!v) return "";
+      if (/^\d{4}-\d{2}-\d{2}T/.test(v)) {
         const d = new Date(v);
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth()+1).padStart(2,'0');
-        const dd = String(d.getDate()).padStart(2,'0');
-        const hh = String(d.getHours()).padStart(2,'0');
-        const min = String(d.getMinutes()).padStart(2,'0');
-        return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
+        const dd = String(d.getDate()).padStart(2,"0");
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const yy = String(d.getFullYear()).slice(-2);
+        const hh = String(d.getHours()).padStart(2,"0");
+        const mi = String(d.getMinutes()).padStart(2,"0");
+        return `${dd}-${mm}-${yy} ${hh}:${mi}`;
       }
       return String(v);
     }
 
     function escapeHtml(s){
       return String(s)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
     }
 
-    // inicialização
-    document.addEventListener('DOMContentLoaded', () => {
-      const today = new Date().toISOString().split('T')[0];
-      const dateEl = document.getElementById('date');
-      if (dateEl) dateEl.value = today;
-      loadMatches(); // aba inicial
-    });
+    document.addEventListener("DOMContentLoaded", loadPlayers);
   </script>
 </body>
 </html>
