@@ -30,21 +30,14 @@
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
     td.num { text-align:center; }
 
-    /* larguras mínimas para a tabela de jogos */
-    #matches-table th:nth-child(1), #matches-table td:nth-child(1) { min-width:120px; } /* Date */
-    #matches-table th:nth-child(2), #matches-table td:nth-child(2) { min-width:60px; }  /* Round */
-    #matches-table th:nth-child(3), #matches-table td:nth-child(3),
-    #matches-table th:nth-child(4), #matches-table td:nth-child(4) { min-width:150px; } /* Teams */
-    #matches-table th:nth-child(5), #matches-table td:nth-child(5),
-    #matches-table th:nth-child(6), #matches-table td:nth-child(6) { min-width:80px; }  /* Goals */
-    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width:120px; } /* League */
-    #matches-table th:nth-child(8), #matches-table td:nth-child(8) { min-width:160px; } /* Registration */
-
-    /* larguras mínimas para a tabela de players (sem Position e URL) */
-    #players-table th:nth-child(1), #players-table td:nth-child(1) { min-width:70px; }   /* Round */
-    #players-table th:nth-child(2), #players-table td:nth-child(2) { min-width:150px; }  /* Team */
-    #players-table th:nth-child(3), #players-table td:nth-child(3) { min-width:150px; }  /* Player */
-    #players-table th:last-child, #players-table td:last-child { min-width:160px; }      /* Registration */
+    /* Botão Delete */
+    button.btn-del {
+      padding:.35rem .6rem;
+      font-size:.85rem;
+      border:0; border-radius:4px;
+      background:#dc3545; color:#fff; cursor:pointer;
+    }
+    button.btn-del:hover { background:#bb2d3b; }
 
     @media (max-width: 1000px){
       .two-col { grid-template-columns: 1fr; }
@@ -140,9 +133,9 @@
 
   <script>
     /* ENDPOINTS E TOKEN */
-    const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbw13CtTLo9V0znGq-owvdC0njEJ42mWgxHZsU6aIYFyQqHSrsptryPHpOfhUdFBg55KHQ/exec';
-    const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbyFt5lZTHN7eW3XqIparGjFBZ1P6HtV41JsOrJMfu-695oky3dLOs0hpJN_CUALyMtN/exec';
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // -> igual ao Apps Script
+    const ENDPOINT_MATCHES = 'SUA_URL_EXEC_DO_MATCH_RESULTS';
+    const ENDPOINT_PLAYERS = 'SUA_URL_EXEC_DO_PLAYER_PERFORMANCE';
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // igual ao Apps Script
 
     // colunas que NÃO devem aparecer na TABELA de players
     const EXCLUDE_PLAYERS = ['Position', 'URL'];
@@ -164,20 +157,18 @@
       const data = Object.fromEntries(new FormData(form).entries());
 
       const url = (formType === 'match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
-      if (!url){ alert('Endpoint não configurado para este formulário.'); return false; }
+      if (!url){ alert('Endpoint não configurado.'); return false; }
 
-      const body = new URLSearchParams({ ...data, token: TOKEN });
+      const body = new URLSearchParams({ ...data, action:'add', token: TOKEN });
 
       try {
         const resp = await fetch(url, { method:'POST', body });
-        let ok = false;
-        try { const j = await resp.json(); ok = j.ok === true; } catch(_) { ok = resp.ok; }
-        if (!ok) throw new Error('Falha ao enviar');
+        const j = await resp.json();
+        if (!j.ok) throw new Error(j.error || 'Falha ao enviar');
 
         const success = form.querySelector('.success-message');
         if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 3500); }
 
-        // reset mínimo
         form.reset();
         if (formType === 'player-performance'){
           document.getElementById('team').value = 'Kairat Sydney FC';
@@ -195,37 +186,38 @@
       return false;
     }
 
-    /** ====== TABELAS ====== **/
     async function loadMatches(){
-      await loadAndRender(ENDPOINT_MATCHES, 'matches-thead', 'matches-tbody',
-        ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date']);
+      await loadAndRender(
+        ENDPOINT_MATCHES,
+        'matches-thead',
+        'matches-tbody',
+        ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date'],
+        [], true
+      );
     }
 
     async function loadPlayers(){
-      // Sem Position e URL
       await loadAndRender(
         ENDPOINT_PLAYERS,
         'players-thead',
         'players-tbody',
         ['Round','Team','Player','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','Registration Date'],
-        EXCLUDE_PLAYERS
+        EXCLUDE_PLAYERS, false
       );
     }
 
-    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder, excludeCols = []){
+    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder, excludeCols = [], withDelete = false){
       try {
         const resp = await fetch(endpoint, { method:'GET' });
         const json = await resp.json();
-        if (!json.ok || !Array.isArray(json.headers) || !Array.isArray(json.records)) {
-          throw new Error(json.error || 'Formato inválido de resposta');
-        }
+        if (!json.ok) throw new Error(json.error || 'Formato inválido');
 
         const thead = document.getElementById(theadId);
         const tbody = document.getElementById(tbodyId);
         thead.innerHTML = ''; tbody.innerHTML = '';
 
         const headers = reorderAndFilterHeaders(json.headers, preferredOrder, excludeCols);
-        thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
+        thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}${withDelete?'<th>Actions</th>':''}</tr>`;
 
         json.records.forEach(rec => {
           const tds = headers.map(h => {
@@ -233,86 +225,57 @@
             const cls = isNumeric(v) ? ' class="num"' : '';
             return `<td${cls}>${escapeHtml(formatCell(v))}</td>`;
           }).join('');
-          tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
+          const actions = withDelete ? `<td><button class="btn-del" onclick="deleteRow('${endpoint}', ${rec.rowNumber}, this)">Delete</button></td>` : '';
+          tbody.insertAdjacentHTML('beforeend', `<tr>${tds}${actions}</tr>`);
         });
       } catch (e){
-        console.error(e);
-        const tbody = document.getElementById(tbodyId);
-        if (tbody) tbody.innerHTML = `<tr><td>Failed to load data</td></tr>`;
+        console.error('[loadAndRender]', e);
+        document.getElementById(tbodyId).innerHTML = `<tr><td>Failed to load data</td></tr>`;
+      }
+    }
+
+    async function deleteRow(endpoint, rowNumber, btnEl){
+      const ok = confirm(`Apagar a linha ${rowNumber}?`);
+      if (!ok) return;
+      try {
+        const body = new URLSearchParams({ action:'delete', row:String(rowNumber), token:TOKEN });
+        const resp = await fetch(endpoint, { method:'POST', body });
+        const j = await resp.json();
+        if (!j.ok) throw new Error(j.error || 'Falha ao deletar');
+        btnEl.closest('tr').remove();
+      } catch (err){
+        alert('Erro ao deletar: ' + err.message);
       }
     }
 
     function reorderAndFilterHeaders(headers, preferred, exclude){
-      const excludeSet = new Set((exclude || []).map(x => String(x).toLowerCase()));
+      const excludeSet = new Set((exclude||[]).map(x=>String(x).toLowerCase()));
       const norm = s => String(s||'').toLowerCase();
-
-      // 1) pega preferred na ordem pedida, removendo os que estão excluídos
-      const first = preferred
-        .filter(h => headers.includes(h))
-        .filter(h => !excludeSet.has(norm(h)));
-
-      // 2) adiciona o restante que não está em preferred e não está excluído
-      const rest = headers
-        .filter(h => !preferred.includes(h))
-        .filter(h => !excludeSet.has(norm(h)));
-
+      const first = preferred.filter(h=>headers.includes(h)).filter(h=>!excludeSet.has(norm(h)));
+      const rest  = headers.filter(h=>!preferred.includes(h)).filter(h=>!excludeSet.has(norm(h)));
       return [...first, ...rest];
     }
-
-    function isNumeric(v){
-      if (v === null || v === undefined) return false;
-      if (Object.prototype.toString.call(v) === '[object Date]') return false;
-      return v !== '' && !isNaN(v);
-    }
-
-    // só formata data quando realmente é data;
+    function isNumeric(v){ return v!=='' && !isNaN(v) && !(Object.prototype.toString.call(v)==='[object Date]'); }
     function formatCell(v){
-      if (v === null || v === undefined) return '';
-
-      // Se já veio como Date do Apps Script
-      if (Object.prototype.toString.call(v) === '[object Date]') {
-        const d = v;
-        if (!isNaN(d.getTime())) return fmtDate(d);
-        return '';
-      }
-
-      // Se for número (ou string numérica) → mantém
+      if (v===null||v===undefined) return '';
       if (isNumeric(v)) return String(v);
-
-      // Se for string que pareça data → formata
-      if (typeof v === 'string' && !isNaN(Date.parse(v))) {
+      if (typeof v==='string' && !isNaN(Date.parse(v))){
         const d = new Date(v);
         if (!isNaN(d.getTime())) return fmtDate(d);
       }
-
       return String(v);
     }
-
     function fmtDate(d){
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const dd = String(d.getDate()).padStart(2,'0');
-      const hh = String(d.getHours()).padStart(2,'0');
-      const mi = String(d.getMinutes()).padStart(2,'0');
+      const yyyy=d.getFullYear(),mm=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
+      const hh=String(d.getHours()).padStart(2,'0'),mi=String(d.getMinutes()).padStart(2,'0');
       return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
     }
+    function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;"); }
 
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
-    }
-
-    // inicialização
     document.addEventListener('DOMContentLoaded', () => {
-      const today = new Date().toISOString().split('T')[0];
-      const dateEl = document.getElementById('date');
-      if (dateEl) dateEl.value = today;
-      loadMatches();      // carrega a de jogos ao abrir
-      // loadPlayers();   // carrega quando abrir a aba Player Performance
+      const today=new Date().toISOString().split('T')[0];
+      const dateEl=document.getElementById('date'); if(dateEl) dateEl.value=today;
+      loadMatches();
     });
   </script>
 </body>
