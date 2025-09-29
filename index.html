@@ -7,8 +7,9 @@
   <style>
     body { font-family: Arial, sans-serif; margin:0; background:#f9f9f9; }
     header { background:#222; color:#fff; padding:1rem; text-align:center; }
+
     .tabs { display:flex; justify-content:center; background:#eee; }
-    .tab { padding:1rem; cursor:pointer; }
+    .tab { padding:1rem 1.25rem; cursor:pointer; }
     .tab.active { background:#ddd; font-weight:bold; }
 
     .container { max-width:1400px; margin:2rem auto; }
@@ -22,10 +23,11 @@
     button:hover { background:#0b5ed7; }
     .success-message { color:green; display:none; margin-top:12px; }
 
+    .table-wrap { overflow-x:auto; border:1px solid #eee; border-radius:6px; }
     table { width:100%; border-collapse:collapse; font-size:14px; table-layout:auto; }
     th, td { border-bottom:1px solid #eee; padding:.55rem .6rem; text-align:left; white-space:nowrap; }
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
-    .table-wrap { overflow-x:auto; border:1px solid #eee; border-radius:6px; }
+    td.num { text-align:center; }
 
     /* largura mínima para colunas comuns de jogos */
     #matches-table th:nth-child(1), #matches-table td:nth-child(1) { min-width:120px; } /* Date */
@@ -34,16 +36,16 @@
     #matches-table th:nth-child(4), #matches-table td:nth-child(4) { min-width:150px; } /* Away Team */
     #matches-table th:nth-child(5), #matches-table td:nth-child(5),
     #matches-table th:nth-child(6), #matches-table td:nth-child(6) { min-width:80px; text-align:center; } /* Goals */
-    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width:160px; } /* Registration */
+    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width:140px; } /* League */
+    #matches-table th:nth-child(8), #matches-table td:nth-child(8) { min-width:160px; } /* Registration */
 
     /* largura mínima para colunas comuns de players */
     #players-table th:nth-child(1), #players-table td:nth-child(1) { min-width:70px; }   /* Round */
     #players-table th:nth-child(2), #players-table td:nth-child(2) { min-width:150px; }  /* Team */
     #players-table th:nth-child(3), #players-table td:nth-child(3) { min-width:150px; }  /* Player */
     #players-table th:nth-child(4), #players-table td:nth-child(4) { min-width:120px; }  /* Position */
-    #players-table th, #players-table td { text-align:left; }
-    #players-table .num { text-align:center; min-width:70px; }
-    #players-table th:last-child, #players-table td:last-child { min-width:160px; } /* Registration */
+    #players-table th:last-child, #players-table td:last-child { min-width:160px; }       /* Registration */
+    #players-table td.num { text-align:center; min-width:70px; }
 
     .muted { color:#666; font-size:13px; }
 
@@ -140,10 +142,10 @@
   </div>
 
   <script>
-    /* ENDPOINTS E TOKEN */
+    /* ENDPOINTS E TOKEN (use os seus URLs publicados) */
     const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbztDzuSKmjMGgYB2po9cENEKT2VBeUoUpRGm2jeT1vS5rdRdoxnGVYHC6LEh8kk95RR/exec';
     const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbyFt5lZTHN7eW3XqIparGjFBZ1P6HtV41JsOrJMfu-695oky3dLOs0hpJN_CUALyMtN/exec';
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // deve ser igual ao usado em ambos Apps Script
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI';
 
     function switchTab(tabId, ev){
       document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
@@ -151,12 +153,11 @@
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       if (ev && ev.target) ev.target.classList.add('active');
 
-      // carrega tabela da aba ativa
       if (tabId === 'match-results') loadMatches();
       if (tabId === 'player-performance') loadPlayers();
     }
 
-    // envio form como x-www-form-urlencoded para evitar preflight
+    // envia como application/x-www-form-urlencoded (sem preflight)
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
@@ -176,7 +177,6 @@
         const success = form.querySelector('.success-message');
         if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 4000); }
 
-        // reset mínimo
         form.reset();
         if (formType === 'player-performance'){
           document.getElementById('team').value = 'Kairat Sydney FC';
@@ -196,13 +196,19 @@
 
     /** ====== TABELAS ====== **/
     async function loadMatches(){
-      await loadAndRender(ENDPOINT_MATCHES, 'matches-thead', 'matches-tbody',
-        ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date']);
+      await loadAndRender(
+        ENDPOINT_MATCHES,
+        'matches-thead','matches-tbody',
+        ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date']
+      );
     }
 
     async function loadPlayers(){
-      await loadAndRender(ENDPOINT_PLAYERS, 'players-thead', 'players-tbody',
-        ['Round','Team','Player','Position','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','URL','Registration Date']);
+      await loadAndRender(
+        ENDPOINT_PLAYERS,
+        'players-thead','players-tbody',
+        ['Round','Team','Player','Position','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','URL','Registration Date']
+      );
     }
 
     async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder){
@@ -215,7 +221,8 @@
 
         const thead = document.getElementById(theadId);
         const tbody = document.getElementById(tbodyId);
-        thead.innerHTML = ''; tbody.innerHTML = '';
+        thead.innerHTML = ''; 
+        tbody.innerHTML = '';
 
         const headers = reorderHeaders(json.headers, preferredOrder);
         thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
@@ -224,7 +231,7 @@
           const tds = headers.map(h => {
             const v = rec[h];
             const cls = isNumeric(v) ? ' class="num"' : '';
-            return `<td${cls}>${escapeHtml(formatCell(v))}</td>`;
+            return `<td${cls}>${escapeHtml(formatCell(v, h))}</td>`;
           }).join('');
           tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
         });
@@ -247,10 +254,25 @@
       return Number.isFinite(n);
     }
 
-    function formatCell(v){
+    // formata só quando a coluna é de DATA
+    function formatCell(v, headerName){
       if (v === null || v === undefined) return '';
-      // datas ISO ou serializadas pelo Apps Script
-      if (!isNaN(Date.parse(v))) {
+      const isDateColumn = headerName === 'Date' || headerName === 'Registration Date';
+
+      // Date genuíno (Apps Script retorna Date quando a célula está formatada como Date/Time)
+      if (Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v)) {
+        if (!isDateColumn) return String(v); // não formatar números tratados como hora
+        const d = v;
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth()+1).padStart(2,'0');
+        const dd = String(d.getDate()).padStart(2,'0');
+        const hh = String(d.getHours()).padStart(2,'0');
+        const mi = String(d.getMinutes()).padStart(2,'0');
+        return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
+      }
+
+      // ISO string (fallback)
+      if (isDateColumn && typeof v === 'string' && !isNaN(Date.parse(v))) {
         const d = new Date(v);
         const yyyy = d.getFullYear();
         const mm = String(d.getMonth()+1).padStart(2,'0');
@@ -259,6 +281,7 @@
         const mi = String(d.getMinutes()).padStart(2,'0');
         return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
       }
+
       return String(v);
     }
 
@@ -276,8 +299,7 @@
       const today = new Date().toISOString().split('T')[0];
       const dateEl = document.getElementById('date');
       if (dateEl) dateEl.value = today;
-      loadMatches();      // carrega tabela de jogos ao abrir
-      // loadPlayers();   // carregará quando trocar para a aba Player Performance
+      loadMatches(); // carrega de início
     });
   </script>
 </body>
