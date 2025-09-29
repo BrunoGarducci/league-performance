@@ -5,15 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Futsal League Sydney</title>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f9f9f9; color:#222; }
-    header { background:#222; color:#fff; padding:1rem; text-align:center; font-weight:700; font-size:22px; }
-    .tabs { display:flex; justify-content:center; background:#eee; gap:8px; padding:8px 0; }
-    .tab { padding:.65rem 1rem; cursor:pointer; border-radius:6px; }
-    .tab.active { background:#ddd; font-weight:600; }
+    body { font-family: Arial, sans-serif; margin:0; background:#f7f7f7; color:#222; }
+    header { background:#222; color:#fff; padding:1rem; text-align:center; font-weight:600; font-size:22px; }
+    .tabs { display:flex; justify-content:center; background:#eee; }
+    .tab { padding:1rem 1.25rem; cursor:pointer; }
+    .tab.active { background:#ddd; font-weight:bold; }
+    .container { max-width:1200px; margin:2rem auto; }
 
-    .container { max-width:1400px; margin:2rem auto; padding:0 16px; }
-    .two-col { display:grid; grid-template-columns: 1fr 2.5fr; gap:24px; }
+    .layout { display:grid; grid-template-columns: 280px 1fr; gap:24px; }
     .card { background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:1.25rem; }
+    h2 { margin:0 0 .8rem 0; }
 
     form { display:flex; flex-direction:column; }
     label { margin-top:10px; font-weight:600; }
@@ -22,32 +23,17 @@
     button:hover { background:#0b5ed7; }
     .success-message { color:green; display:none; margin-top:12px; }
 
-    .muted { color:#666; font-size:13px; margin:.25rem 0 .75rem; }
-
-    .table-wrap { overflow:auto; border:1px solid #eee; border-radius:6px; }
-    table { width:100%; border-collapse:collapse; font-size:14px; table-layout:auto; }
-    th, td { border-bottom:1px solid #eee; padding:.55rem .6rem; text-align:left; white-space:nowrap; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { border-bottom:1px solid #eee; padding:.55rem .6rem; text-align:left; vertical-align:top; }
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
-    td.num { text-align:center; }
+    .num { text-align:center; }
+    .muted { color:#666; font-size:13px; margin-bottom:.6rem; }
+    .table-wrap { border:1px solid #eee; border-radius:6px; overflow:auto; max-height:560px; }
+    .danger { background:#dc3545; color:#fff; border:0; padding:.35rem .6rem; border-radius:4px; cursor:pointer; }
+    .danger:hover { filter:brightness(.95); }
 
-    /* larguras mínimas para a tabela de jogos */
-    #matches-table th:nth-child(1), #matches-table td:nth-child(1) { min-width:120px; } /* Date */
-    #matches-table th:nth-child(2), #matches-table td:nth-child(2) { min-width:60px; }  /* Round */
-    #matches-table th:nth-child(3), #matches-table td:nth-child(3),
-    #matches-table th:nth-child(4), #matches-table td:nth-child(4) { min-width:150px; } /* Teams */
-    #matches-table th:nth-child(5), #matches-table td:nth-child(5),
-    #matches-table th:nth-child(6), #matches-table td:nth-child(6) { min-width:80px; }  /* Goals */
-    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width:120px; } /* League */
-    #matches-table th:nth-child(8), #matches-table td:nth-child(8) { min-width:160px; } /* Registration */
-
-    /* larguras mínimas para a tabela de players (sem Position e URL) */
-    #players-table th:nth-child(1), #players-table td:nth-child(1) { min-width:70px; }   /* Round */
-    #players-table th:nth-child(2), #players-table td:nth-child(2) { min-width:150px; }  /* Team */
-    #players-table th:nth-child(3), #players-table td:nth-child(3) { min-width:150px; }  /* Player */
-    #players-table th:last-child, #players-table td:last-child { min-width:160px; }      /* Registration */
-
-    @media (max-width: 1000px){
-      .two-col { grid-template-columns: 1fr; }
+    @media (max-width: 980px){
+      .layout{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -61,8 +47,7 @@
 
   <!-- MATCH RESULTS -->
   <div id="match-results" class="container form-section" style="display:block;">
-    <div class="two-col">
-      <!-- Formulário -->
+    <div class="layout">
       <div class="card">
         <h2>Match Results</h2>
         <form onsubmit="return submitForm(event, 'match-results')">
@@ -78,11 +63,10 @@
         </form>
       </div>
 
-      <!-- Tabela -->
       <div class="card">
-        <h2 style="margin-bottom:.6rem;">Existing Matches</h2>
+        <h2>Existing Matches</h2>
         <div class="muted">Source: <code>match-results</code> (Google Sheets)</div>
-        <div class="table-wrap" id="matches-table">
+        <div class="table-wrap">
           <table>
             <thead id="matches-thead"></thead>
             <tbody id="matches-tbody"></tbody>
@@ -92,60 +76,19 @@
     </div>
   </div>
 
-  <!-- PLAYER PERFORMANCE -->
+  <!-- PLAYER PERFORMANCE (somente visualização, como estava) -->
   <div id="player-performance" class="container form-section" style="display:none;">
-    <div class="two-col">
-      <!-- Formulário -->
-      <div class="card">
-        <h2>Player Performance</h2>
-        <form onsubmit="return submitForm(event, 'player-performance')">
-          <label>Round <input type="text" name="Round" required/></label>
-          <label>Team <input type="text" id="team" name="Team" value="Kairat Sydney FC" required/></label>
-          <label>Player <input type="text" name="Player" required/></label>
-          <label>Position
-            <select name="Position" required>
-              <option>Goalkeeper</option>
-              <option>Defender</option>
-              <option>Winger</option>
-              <option>Pivot</option>
-            </select>
-          </label>
-          <label>Goals <input type="number" id="goals" name="Goals" value="0"/></label>
-          <label>Assists <input type="number" name="Assists" value="0"/></label>
-          <label>Shots <input type="number" name="Shots" value="0"/></label>
-          <label>Shots on Target <input type="number" name="Shots on Target" value="0"/></label>
-          <label>Passes Completed <input type="number" name="Passes Completed" value="0"/></label>
-          <label>Interceptions <input type="number" name="Interceptions" value="0"/></label>
-          <label>Yellow Cards <input type="number" name="Yellow Cards" value="0"/></label>
-          <label>Red Cards <input type="number" name="Red Cards" value="0"/></label>
-          <label>Image URL <input type="url" name="URL" placeholder="https://raw.githubusercontent.com/.../player.jpg"/></label>
-          <button type="submit">Submit Player</button>
-          <div class="success-message">Player data submitted successfully!</div>
-        </form>
-      </div>
-
-      <!-- Tabela (SEM Position e URL) -->
-      <div class="card">
-        <h2 style="margin-bottom:.6rem;">Existing Player Performances</h2>
-        <div class="muted">Source: <code>player-performance</code> (Google Sheets)</div>
-        <div class="table-wrap" id="players-table">
-          <table>
-            <thead id="players-thead"></thead>
-            <tbody id="players-tbody"></tbody>
-          </table>
-        </div>
-      </div>
+    <div class="card">
+      <h2>Player Performance</h2>
+      <p class="muted">A aba de edição/deleção está habilitada apenas em Match Results neste exemplo.</p>
+      <!-- aqui você mantém sua versão atual com tabela e/ou formulário -->
     </div>
   </div>
 
   <script>
     /* ENDPOINTS E TOKEN */
     const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbztDzuSKmjMGgYB2po9cENEKT2VBeUoUpRGm2jeT1vS5rdRdoxnGVYHC6LEh8kk95RR/exec';
-    const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbyFt5lZTHN7eW3XqIparGjFBZ1P6HtV41JsOrJMfu-695oky3dLOs0hpJN_CUALyMtN/exec';
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // -> igual ao Apps Script
-
-    // colunas que NÃO devem aparecer na TABELA de players
-    const EXCLUDE_PLAYERS = ['Position', 'URL'];
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI';
 
     function switchTab(tabId, ev){
       document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
@@ -154,16 +97,15 @@
       if (ev && ev.target) ev.target.classList.add('active');
 
       if (tabId === 'match-results') loadMatches();
-      if (tabId === 'player-performance') loadPlayers();
     }
 
-    // envia como x-www-form-urlencoded para evitar preflight
+    // envia como x-www-form-urlencoded (evita preflight)
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
       const data = Object.fromEntries(new FormData(form).entries());
 
-      const url = (formType === 'match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
+      const url = (formType === 'match-results') ? ENDPOINT_MATCHES : null;
       if (!url){ alert('Endpoint não configurado para este formulário.'); return false; }
 
       const body = new URLSearchParams({ ...data, token: TOKEN });
@@ -175,126 +117,122 @@
         if (!ok) throw new Error('Falha ao enviar');
 
         const success = form.querySelector('.success-message');
-        if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 3500); }
+        if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 3000); }
 
-        // reset mínimo
         form.reset();
-        if (formType === 'player-performance'){
-          document.getElementById('team').value = 'Kairat Sydney FC';
-          document.getElementById('goals').value = '0';
-          loadPlayers();
-        } else {
-          document.getElementById('homeTeam').value = 'Kairat Sydney FC';
-          const today = new Date().toISOString().split('T')[0];
-          document.getElementById('date').value = today;
-          loadMatches();
-        }
+        document.getElementById('homeTeam').value = 'Kairat Sydney FC';
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').value = today;
+
+        loadMatches();
       } catch (err){
         alert('Falhou: ' + err.message);
       }
       return false;
     }
 
-    /** ====== TABELAS ====== **/
+    /** ====== LISTAGEM + DELETE + EDIÇÃO (Match Results) ====== **/
     async function loadMatches(){
-      await loadAndRender(ENDPOINT_MATCHES, 'matches-thead', 'matches-tbody',
-        ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date']);
-    }
-
-    async function loadPlayers(){
-      // Sem Position e URL
-      await loadAndRender(
-        ENDPOINT_PLAYERS,
-        'players-thead',
-        'players-tbody',
-        ['Round','Team','Player','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','Registration Date'],
-        EXCLUDE_PLAYERS
-      );
-    }
-
-    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder, excludeCols = []){
       try {
-        const resp = await fetch(endpoint, { method:'GET' });
+        const resp = await fetch(ENDPOINT_MATCHES, { method:'GET' });
         const json = await resp.json();
-        if (!json.ok || !Array.isArray(json.headers) || !Array.isArray(json.records)) {
-          throw new Error(json.error || 'Formato inválido de resposta');
-        }
+        if (!json.ok) throw new Error(json.error || 'Erro ao obter dados');
 
-        const thead = document.getElementById(theadId);
-        const tbody = document.getElementById(tbodyId);
-        thead.innerHTML = ''; tbody.innerHTML = '';
+        const thead = document.getElementById('matches-thead');
+        const tbody = document.getElementById('matches-tbody');
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
 
-        const headers = reorderAndFilterHeaders(json.headers, preferredOrder, excludeCols);
-        thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
+        // colunas que queremos renderizar (inclui ID para ações)
+        const preferred = ['ID','Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date'];
+        const headers = preferred.filter(h => json.headers.includes(h));
+
+        // adiciona coluna "Actions"
+        const renderHeaders = headers.concat(['Actions']);
+        thead.innerHTML = `<tr>${renderHeaders.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
 
         json.records.forEach(rec => {
           const tds = headers.map(h => {
             const v = rec[h];
-            const cls = isNumeric(v) ? ' class="num"' : '';
-            return `<td${cls}>${escapeHtml(formatCell(v))}</td>`;
+            const numCol = (h==='Home Goals'||h==='Away Goals') ? ' class="num"' : '';
+            return `<td data-col="${escapeHtml(h)}"${numCol}>${escapeHtml(formatCell(v))}</td>`;
           }).join('');
-          tbody.insertAdjacentHTML('beforeend', `<tr>${tds}</tr>`);
+
+          const id = rec['ID'] || '';
+          const actions = `<td><button data-act="del" data-id="${escapeHtml(id)}" class="danger">Delete</button></td>`;
+
+          const tr = document.createElement('tr');
+          tr.setAttribute('data-id', id);
+          tr.innerHTML = tds + actions;
+          tbody.appendChild(tr);
         });
-      } catch (e){
+
+        // Delete
+        tbody.onclick = async (ev) => {
+          const btn = ev.target.closest('button[data-act="del"]');
+          if (!btn) return;
+          const id = btn.getAttribute('data-id');
+          if (!id) return;
+          if (!confirm('Delete this match?')) return;
+          await postAction('delete', { id });
+          loadMatches();
+        };
+
+        // Duplo clique para editar
+        tbody.ondblclick = async (ev) => {
+          const td = ev.target.closest('td[data-col]');
+          if (!td) return;
+
+          const col = td.getAttribute('data-col'); // "Date", "Round", etc
+          if (col === 'ID' || col === 'Registration Date') return; // não editar
+
+          const tr = td.parentElement;
+          const id = tr.getAttribute('data-id');
+          const current = td.textContent.trim();
+
+          const next = prompt(`Edit ${col}:`, current);
+          if (next === null) return; // cancel
+
+          const payload = { id };
+          payload[col] = next;
+
+          await postAction('update', payload);
+          loadMatches();
+        };
+
+      } catch (e) {
         console.error(e);
-        const tbody = document.getElementById(tbodyId);
+        const tbody = document.getElementById('matches-tbody');
         if (tbody) tbody.innerHTML = `<tr><td>Failed to load data</td></tr>`;
       }
     }
 
-    function reorderAndFilterHeaders(headers, preferred, exclude){
-      const excludeSet = new Set((exclude || []).map(x => String(x).toLowerCase()));
-      const norm = s => String(s||'').toLowerCase();
-
-      // 1) pega preferred na ordem pedida, removendo os que estão excluídos
-      const first = preferred
-        .filter(h => headers.includes(h))
-        .filter(h => !excludeSet.has(norm(h)));
-
-      // 2) adiciona o restante que não está em preferred e não está excluído
-      const rest = headers
-        .filter(h => !preferred.includes(h))
-        .filter(h => !excludeSet.has(norm(h)));
-
-      return [...first, ...rest];
+    async function postAction(action, extra){
+      const body = new URLSearchParams({ action, token: TOKEN, ...extra });
+      const resp = await fetch(ENDPOINT_MATCHES, { method:'POST', body });
+      const j = await resp.json();
+      if (!j.ok) throw new Error(j.error || 'action failed');
+      return j;
     }
 
-    function isNumeric(v){
-      if (v === null || v === undefined) return false;
-      if (Object.prototype.toString.call(v) === '[object Date]') return false;
-      return v !== '' && !isNaN(v);
-    }
-
-    // só formata data quando realmente é data;
+    /* ====== Helper funcs ====== */
     function formatCell(v){
       if (v === null || v === undefined) return '';
-
-      // Se já veio como Date do Apps Script
-      if (Object.prototype.toString.call(v) === '[object Date]') {
-        const d = v;
-        if (!isNaN(d.getTime())) return fmtDate(d);
-        return '';
+      // tenta detectar data; se for número ou não-data, exibe como está
+      const asStr = String(v);
+      const maybeDate = !isNaN(Date.parse(asStr));
+      if (maybeDate) {
+        const d = new Date(asStr);
+        if (!isNaN(d.getTime())) {
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth()+1).padStart(2,'0');
+          const dd = String(d.getDate()).padStart(2,'0');
+          const hh = String(d.getHours()).padStart(2,'0');
+          const mi = String(d.getMinutes()).padStart(2,'0');
+          return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
+        }
       }
-
-      // Se for número (ou string numérica) → mantém
-      if (isNumeric(v)) return String(v);
-
-      // Se for string que pareça data → formata
-      if (typeof v === 'string' && !isNaN(Date.parse(v))) {
-        const d = new Date(v);
-        if (!isNaN(d.getTime())) return fmtDate(d);
-      }
-
-      return String(v);
-    }
-
-    function fmtDate(d){
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const dd = String(d.getDate()).padStart(2,'0');
-      const hh = String(d.getHours()).padStart(2,'0');
-      const mi = String(d.getMinutes()).padStart(2,'0');
-      return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
+      return asStr;
     }
 
     function escapeHtml(s){
@@ -306,13 +244,12 @@
         .replaceAll("'","&#039;");
     }
 
-    // inicialização
+    // Inicialização
     document.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().split('T')[0];
       const dateEl = document.getElementById('date');
       if (dateEl) dateEl.value = today;
-      loadMatches();      // carrega a de jogos ao abrir
-      // loadPlayers();   // carrega quando abrir a aba Player Performance
+      loadMatches(); // carrega ao abrir
     });
   </script>
 </body>
