@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Futsal League Sydney</title>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f9f9f9; }
-    header { background:#222; color:#fff; padding:1rem; text-align:center; }
-    .tabs { display:flex; justify-content:center; background:#eee; }
-    .tab { padding:1rem; cursor:pointer; }
-    .tab.active { background:#ddd; font-weight:bold; }
+    body { font-family: Arial, sans-serif; margin:0; background:#f9f9f9; color:#222; }
+    header { background:#222; color:#fff; padding:1rem; text-align:center; font-weight:700; font-size:22px; }
+    .tabs { display:flex; justify-content:center; background:#eee; gap:8px; padding:8px 0; }
+    .tab { padding:.65rem 1rem; cursor:pointer; border-radius:6px; }
+    .tab.active { background:#ddd; font-weight:600; }
 
-    .container { max-width:1400px; margin:2rem auto; }
+    .container { max-width:1400px; margin:2rem auto; padding:0 16px; }
     .two-col { display:grid; grid-template-columns: 1fr 2.5fr; gap:24px; }
-    .card { background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:1.5rem; }
+    .card { background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:1.25rem; }
 
     form { display:flex; flex-direction:column; }
     label { margin-top:10px; font-weight:600; }
@@ -22,22 +22,29 @@
     button:hover { background:#0b5ed7; }
     .success-message { color:green; display:none; margin-top:12px; }
 
+    .muted { color:#666; font-size:13px; margin:.25rem 0 .75rem; }
+
+    .table-wrap { overflow:auto; border:1px solid #eee; border-radius:6px; }
     table { width:100%; border-collapse:collapse; font-size:14px; table-layout:auto; }
     th, td { border-bottom:1px solid #eee; padding:.55rem .6rem; text-align:left; white-space:nowrap; }
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
-    .table-wrap { overflow-x:auto; border:1px solid #eee; border-radius:6px; }
+    td.num { text-align:center; }
 
-    /* largura mínima para colunas comuns de jogos */
+    /* larguras mínimas para a tabela de jogos */
     #matches-table th:nth-child(1), #matches-table td:nth-child(1) { min-width:120px; } /* Date */
     #matches-table th:nth-child(2), #matches-table td:nth-child(2) { min-width:60px; }  /* Round */
-    #matches-table th:nth-child(3), #matches-table td:nth-child(3) { min-width:150px; } /* Home Team */
-    #matches-table th:nth-child(4), #matches-table td:nth-child(4) { min-width:150px; } /* Away Team */
+    #matches-table th:nth-child(3), #matches-table td:nth-child(3),
+    #matches-table th:nth-child(4), #matches-table td:nth-child(4) { min-width:150px; } /* Teams */
     #matches-table th:nth-child(5), #matches-table td:nth-child(5),
-    #matches-table th:nth-child(6), #matches-table td:nth-child(6) { min-width:80px; text-align:center; } /* Goals */
-    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width:160px; } /* Registration */
+    #matches-table th:nth-child(6), #matches-table td:nth-child(6) { min-width:80px; }  /* Goals */
+    #matches-table th:nth-child(7), #matches-table td:nth-child(7) { min-width:120px; } /* League */
+    #matches-table th:nth-child(8), #matches-table td:nth-child(8) { min-width:160px; } /* Registration */
 
-    /* players: escondemos totalmente Position e URL, então não precisamos de estilo para elas */
-    .muted { color:#666; font-size:13px; }
+    /* larguras mínimas para a tabela de players (sem Position e URL) */
+    #players-table th:nth-child(1), #players-table td:nth-child(1) { min-width:70px; }   /* Round */
+    #players-table th:nth-child(2), #players-table td:nth-child(2) { min-width:150px; }  /* Team */
+    #players-table th:nth-child(3), #players-table td:nth-child(3) { min-width:150px; }  /* Player */
+    #players-table th:last-child, #players-table td:last-child { min-width:160px; }      /* Registration */
 
     @media (max-width: 1000px){
       .two-col { grid-template-columns: 1fr; }
@@ -45,7 +52,7 @@
   </style>
 </head>
 <body>
-  <header><h1>Futsal League Sydney</h1></header>
+  <header>Futsal League Sydney</header>
 
   <div class="tabs">
     <div class="tab active" onclick="switchTab('match-results', event)">Match Results</div>
@@ -55,7 +62,7 @@
   <!-- MATCH RESULTS -->
   <div id="match-results" class="container form-section" style="display:block;">
     <div class="two-col">
-      <!-- Form -->
+      <!-- Formulário -->
       <div class="card">
         <h2>Match Results</h2>
         <form onsubmit="return submitForm(event, 'match-results')">
@@ -71,10 +78,10 @@
         </form>
       </div>
 
-      <!-- Table -->
+      <!-- Tabela -->
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Matches</h2>
-        <div class="muted" style="margin-bottom:.6rem;">Source: <code>match-results</code> (Google Sheets)</div>
+        <div class="muted">Source: <code>match-results</code> (Google Sheets)</div>
         <div class="table-wrap" id="matches-table">
           <table>
             <thead id="matches-thead"></thead>
@@ -88,7 +95,7 @@
   <!-- PLAYER PERFORMANCE -->
   <div id="player-performance" class="container form-section" style="display:none;">
     <div class="two-col">
-      <!-- Form -->
+      <!-- Formulário -->
       <div class="card">
         <h2>Player Performance</h2>
         <form onsubmit="return submitForm(event, 'player-performance')">
@@ -117,10 +124,10 @@
         </form>
       </div>
 
-      <!-- Table -->
+      <!-- Tabela (SEM Position e URL) -->
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Player Performances</h2>
-        <div class="muted" style="margin-bottom:.6rem;">Source: <code>player-performance</code> (Google Sheets)</div>
+        <div class="muted">Source: <code>player-performance</code> (Google Sheets)</div>
         <div class="table-wrap" id="players-table">
           <table>
             <thead id="players-thead"></thead>
@@ -132,10 +139,10 @@
   </div>
 
   <script>
-    /* ENDPOINTS E TOKEN (ajuste os seus) */
+    /* ENDPOINTS E TOKEN */
     const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbztDzuSKmjMGgYB2po9cENEKT2VBeUoUpRGm2jeT1vS5rdRdoxnGVYHC6LEh8kk95RR/exec';
     const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbyFt5lZTHN7eW3XqIparGjFBZ1P6HtV41JsOrJMfu-695oky3dLOs0hpJN_CUALyMtN/exec';
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI';
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // → igual ao Apps Script
 
     function switchTab(tabId, ev){
       document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
@@ -143,14 +150,17 @@
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       if (ev && ev.target) ev.target.classList.add('active');
 
+      // carrega tabela da aba ativa
       if (tabId === 'match-results') loadMatches();
       if (tabId === 'player-performance') loadPlayers();
     }
 
+    // envia como x-www-form-urlencoded para evitar preflight
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
       const data = Object.fromEntries(new FormData(form).entries());
+
       const url = (formType === 'match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
       if (!url){ alert('Endpoint não configurado para este formulário.'); return false; }
 
@@ -163,8 +173,9 @@
         if (!ok) throw new Error('Falha ao enviar');
 
         const success = form.querySelector('.success-message');
-        if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 4000); }
+        if (success){ success.style.display='block'; setTimeout(()=> success.style.display='none', 3500); }
 
+        // reset mínimo
         form.reset();
         if (formType === 'player-performance'){
           document.getElementById('team').value = 'Kairat Sydney FC';
@@ -183,30 +194,18 @@
     }
 
     /** ====== TABELAS ====== **/
-
     async function loadMatches(){
-      await loadAndRender(
-        ENDPOINT_MATCHES,
-        'matches-thead',
-        'matches-tbody',
-        /* ordem preferida */ ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date'],
-        /* excluir */ []
-      );
+      await loadAndRender(ENDPOINT_MATCHES, 'matches-thead', 'matches-tbody',
+        ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','League','Registration Date']);
     }
 
     async function loadPlayers(){
-      await loadAndRender(
-        ENDPOINT_PLAYERS,
-        'players-thead',
-        'players-tbody',
-        /* ordem preferida (sem Position e URL) */
-        ['Round','Team','Player','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','Registration Date'],
-        /* excluir de vez */ ['Position','URL']
-      );
+      // Sem Position e URL
+      await loadAndRender(ENDPOINT_PLAYERS, 'players-thead', 'players-tbody',
+        ['Round','Team','Player','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','Registration Date']);
     }
 
-    // Agora aceitamos uma lista de 'exclude' e filtramos completamente essas colunas
-    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder, exclude){
+    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder){
       try {
         const resp = await fetch(endpoint, { method:'GET' });
         const json = await resp.json();
@@ -214,20 +213,14 @@
           throw new Error(json.error || 'Formato inválido de resposta');
         }
 
-        // 1) Filtra headers removendo os excluídos
-        const baseHeaders = json.headers.filter(h => !exclude.includes(h));
-
-        // 2) Ordena: preferidos primeiro, depois o restante (sem excluídos)
-        const headers = reorderHeaders(baseHeaders, preferredOrder);
-
-        // 3) Render
         const thead = document.getElementById(theadId);
         const tbody = document.getElementById(tbodyId);
         thead.innerHTML = ''; tbody.innerHTML = '';
+
+        const headers = reorderHeaders(json.headers, preferredOrder);
         thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
 
         json.records.forEach(rec => {
-          // monta a linha apenas com as colunas não excluídas e na ordem final
           const tds = headers.map(h => {
             const v = rec[h];
             const cls = isNumeric(v) ? ' class="num"' : '';
@@ -250,23 +243,43 @@
 
     function isNumeric(v){
       if (v === null || v === undefined) return false;
-      const n = Number(v);
-      return Number.isFinite(n);
+      // evita tratar objetos Date como número
+      if (Object.prototype.toString.call(v) === '[object Date]') return false;
+      // strings "123" também contam como numérico
+      return v !== '' && !isNaN(v);
     }
 
+    // ✅ Corrigida: só formata data quando realmente é data;
+    // números (gols, assistências, etc.) NÃO viram 01-01-1970.
     function formatCell(v){
       if (v === null || v === undefined) return '';
-      // datas ISO/serial -> dd-mm-yyyy hh:mm
-      const d = new Date(v);
-      if (!isNaN(d)) {
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth()+1).padStart(2,'0');
-        const dd = String(d.getDate()).padStart(2,'0');
-        const hh = String(d.getHours()).padStart(2,'0');
-        const mi = String(d.getMinutes()).padStart(2,'0');
-        return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
+
+      // Se já veio como Date do Apps Script
+      if (Object.prototype.toString.call(v) === '[object Date]') {
+        const d = v;
+        if (!isNaN(d.getTime())) return fmtDate(d);
+        return '';
       }
+
+      // Se for número (ou string numérica) → mantém
+      if (isNumeric(v)) return String(v);
+
+      // Se for string que pareça data → formata
+      if (typeof v === 'string' && !isNaN(Date.parse(v))) {
+        const d = new Date(v);
+        if (!isNaN(d.getTime())) return fmtDate(d);
+      }
+
       return String(v);
+    }
+
+    function fmtDate(d){
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mi = String(d.getMinutes()).padStart(2,'0');
+      return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;
     }
 
     function escapeHtml(s){
@@ -283,8 +296,8 @@
       const today = new Date().toISOString().split('T')[0];
       const dateEl = document.getElementById('date');
       if (dateEl) dateEl.value = today;
-      loadMatches();   // abre com a tabela de jogos
-      // loadPlayers(); // carrega quando clicar na aba
+      loadMatches();      // carrega tabela de jogos ao abrir
+      // loadPlayers();   // carrega ao trocar para a aba Player Performance
     });
   </script>
 </body>
