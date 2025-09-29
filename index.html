@@ -142,7 +142,10 @@
     /* ENDPOINTS E TOKEN */
     const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbztDzuSKmjMGgYB2po9cENEKT2VBeUoUpRGm2jeT1vS5rdRdoxnGVYHC6LEh8kk95RR/exec';
     const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbyFt5lZTHN7eW3XqIparGjFBZ1P6HtV41JsOrJMfu-695oky3dLOs0hpJN_CUALyMtN/exec';
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // → igual ao Apps Script
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // -> igual ao Apps Script
+
+    // colunas que NÃO devem aparecer na TABELA de players
+    const EXCLUDE_PLAYERS = ['Position', 'URL'];
 
     function switchTab(tabId, ev){
       document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
@@ -150,7 +153,6 @@
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       if (ev && ev.target) ev.target.classList.add('active');
 
-      // carrega tabela da aba ativa
       if (tabId === 'match-results') loadMatches();
       if (tabId === 'player-performance') loadPlayers();
     }
@@ -201,11 +203,16 @@
 
     async function loadPlayers(){
       // Sem Position e URL
-      await loadAndRender(ENDPOINT_PLAYERS, 'players-thead', 'players-tbody',
-        ['Round','Team','Player','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','Registration Date']);
+      await loadAndRender(
+        ENDPOINT_PLAYERS,
+        'players-thead',
+        'players-tbody',
+        ['Round','Team','Player','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','Registration Date'],
+        EXCLUDE_PLAYERS
+      );
     }
 
-    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder){
+    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder, excludeCols = []){
       try {
         const resp = await fetch(endpoint, { method:'GET' });
         const json = await resp.json();
@@ -217,7 +224,7 @@
         const tbody = document.getElementById(tbodyId);
         thead.innerHTML = ''; tbody.innerHTML = '';
 
-        const headers = reorderHeaders(json.headers, preferredOrder);
+        const headers = reorderAndFilterHeaders(json.headers, preferredOrder, excludeCols);
         thead.innerHTML = `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
 
         json.records.forEach(rec => {
@@ -235,22 +242,30 @@
       }
     }
 
-    function reorderHeaders(headers, preferred){
-      const inPreferred = preferred.filter(h => headers.includes(h));
-      const rest = headers.filter(h => !preferred.includes(h));
-      return [...inPreferred, ...rest];
+    function reorderAndFilterHeaders(headers, preferred, exclude){
+      const excludeSet = new Set((exclude || []).map(x => String(x).toLowerCase()));
+      const norm = s => String(s||'').toLowerCase();
+
+      // 1) pega preferred na ordem pedida, removendo os que estão excluídos
+      const first = preferred
+        .filter(h => headers.includes(h))
+        .filter(h => !excludeSet.has(norm(h)));
+
+      // 2) adiciona o restante que não está em preferred e não está excluído
+      const rest = headers
+        .filter(h => !preferred.includes(h))
+        .filter(h => !excludeSet.has(norm(h)));
+
+      return [...first, ...rest];
     }
 
     function isNumeric(v){
       if (v === null || v === undefined) return false;
-      // evita tratar objetos Date como número
       if (Object.prototype.toString.call(v) === '[object Date]') return false;
-      // strings "123" também contam como numérico
       return v !== '' && !isNaN(v);
     }
 
-    // ✅ Corrigida: só formata data quando realmente é data;
-    // números (gols, assistências, etc.) NÃO viram 01-01-1970.
+    // só formata data quando realmente é data;
     function formatCell(v){
       if (v === null || v === undefined) return '';
 
@@ -296,8 +311,8 @@
       const today = new Date().toISOString().split('T')[0];
       const dateEl = document.getElementById('date');
       if (dateEl) dateEl.value = today;
-      loadMatches();      // carrega tabela de jogos ao abrir
-      // loadPlayers();   // carrega ao trocar para a aba Player Performance
+      loadMatches();      // carrega a de jogos ao abrir
+      // loadPlayers();   // carrega quando abrir a aba Player Performance
     });
   </script>
 </body>
