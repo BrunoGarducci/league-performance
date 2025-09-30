@@ -5,159 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Futsal League Sydney</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #1a202c;
-      min-height: 100vh;
-      padding-bottom: 3rem;
-    }
-
-    /* Header */
-    header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      color: #1a202c;
-      padding: 1.5rem 2rem;
-      text-align: center;
-      font-weight: 700;
-      font-size: 28px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 3px solid #667eea;
-    }
-    header::after { content: '⚽'; margin-left: 12px; font-size: 24px; }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      gap: 16px;
-      padding: 1.25rem 0;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      position: sticky;
-      top: 76px;
-      z-index: 99;
-    }
-    .tab {
-      padding: 0.75rem 2rem;
-      cursor: pointer;
-      border-radius: 12px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-      font-size: 15px;
-      color: #4a5568;
-    }
-    .tab:hover { background: rgba(102, 126, 234, 0.1); transform: translateY(-2px); }
-    .tab.active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      transform: translateY(-2px);
-    }
-
-    .container { max-width: 1400px; margin: 2.5rem auto; padding: 0 24px; }
-    .two-col { display: grid; grid-template-columns: 420px 1fr; gap: 32px; align-items: start; }
-
-    /* Cards */
-    .card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      padding: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); }
-    .card h2 {
-      font-size: 24px; margin-bottom: 1.5rem; color: #2d3748; font-weight: 700;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .card h2::before { content: ''; width: 4px; height: 28px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 2px; }
-
-    /* Form */
-    form { display: flex; flex-direction: column; gap: 16px; }
-    label { font-weight: 600; font-size: 14px; color: #4a5568; }
-    input, select {
-      padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px;
-      transition: all 0.3s ease; width: 100%; background: white;
-    }
-    input:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); transform: translateY(-1px); }
-    input:hover, select:hover { border-color: #cbd5e0; }
-
-    /* Submit button */
-    button[type="submit"]{
-      margin-top: 8px; padding: 1rem; border: 0; border-radius: 12px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
-      font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
-    button[type="submit"]:active { transform: translateY(0); }
-
-    .success-message {
-      color: #38a169; background: #f0fff4; border: 2px solid #9ae6b4; padding: 1rem;
-      border-radius: 10px; display: none; font-weight: 600; text-align: center; animation: slideIn 0.3s ease;
-    }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-    .muted {
-      color: #718096; font-size: 12px; margin: 0 0 1rem; padding: 0.75rem; background: #f7fafc;
-      border-radius: 8px; border-left: 3px solid #667eea;
-    }
-    .muted code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 11px; }
-
-    /* Table */
-    .table-wrap { overflow: auto; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); max-height: 600px; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: auto; }
-    th, td { border-bottom: 1px solid #e2e8f0; padding: 1rem 1rem; text-align: left; white-space: nowrap; }
-    th {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: sticky; top: 0; z-index: 10;
-      font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;
-    }
-    tbody tr { transition: background 0.2s ease; }
-    tbody tr:hover { background: #f7fafc; }
-    tbody tr:nth-child(even) { background: #fafafa; }
-    tbody tr:nth-child(even):hover { background: #f0f4f8; }
-    td.num { text-align: center; font-weight: 600; color: #667eea; }
-
-    /* Delete button */
-    button.btn-del{
-      padding: 0.5rem 1rem; font-size: 13px; font-weight: 600; border: 0; border-radius: 8px;
-      background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%); color: white; cursor: pointer;
-      transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3); text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    button.btn-del:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4); }
-    button.btn-del:active { transform: translateY(0); }
-
-    /* Responsive */
-    @media (max-width:1100px){ .two-col{ grid-template-columns:1fr; } header{ font-size:24px; padding:1.25rem 1.5rem; } .tabs{ top:68px; } }
-    @media (max-width:640px){
-      .container{ padding:0 16px; margin:1.5rem auto; }
-      .card{ padding:1.5rem; }
-      .tab{ padding:0.65rem 1.25rem; font-size:14px; }
-      .table-wrap{ font-size:13px; }
-      th,td{ padding:0.75rem 0.6rem; }
-    }
-
-    .form-section{ animation: fadeIn 0.5s ease; }
-    @keyframes fadeIn{ from{ opacity:0; transform:translateY(20px);} to{ opacity:1; transform:translateY(0);} }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#1a202c;min-height:100vh;padding-bottom:3rem}
+    header{background:rgba(255,255,255,.95);backdrop-filter:blur(10px);color:#1a202c;padding:1.5rem 2rem;text-align:center;font-weight:700;font-size:26px;box-shadow:0 4px 20px rgba(0,0,0,.1);position:sticky;top:0;z-index:100;border-bottom:3px solid #667eea}
+    header::after{content:' ⚽';font-size:22px}
+    .tabs{display:flex;justify-content:center;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);gap:16px;padding:1rem 0;box-shadow:0 2px 10px rgba(0,0,0,.05);position:sticky;top:72px;z-index:99}
+    .tab{padding:.7rem 1.5rem;cursor:pointer;border-radius:10px;font-weight:600;transition:.3s;color:#4a5568}
+    .tab:hover{background:rgba(102,126,234,.1);transform:translateY(-2px)}
+    .tab.active{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;box-shadow:0 4px 15px rgba(102,126,234,.4);transform:translateY(-2px)}
+    .container{max-width:1400px;margin:2rem auto;padding:0 16px}
+    .two-col{display:grid;grid-template-columns:400px 1fr;gap:28px;align-items:start}
+    .card{background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:14px;box-shadow:0 6px 25px rgba(0,0,0,.1);padding:1.5rem;border:1px solid rgba(255,255,255,.8)}
+    .card h2{font-size:20px;margin-bottom:1rem;color:#2d3748;font-weight:700;display:flex;align-items:center;gap:8px}
+    .card h2::before{content:'';width:4px;height:22px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:2px}
+    form{display:flex;flex-direction:column}
+    label{margin-top:10px;font-weight:600;font-size:14px;color:#4a5568}
+    input,select{padding:.65rem;border:2px solid #e2e8f0;border-radius:8px;margin-top:4px;transition:.2s}
+    input:focus,select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.15)}
+    button{margin-top:16px;padding:.9rem;border:0;border-radius:10px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.3s}
+    button:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(102,126,234,.4)}
+    .success-message{color:#38a169;background:#f0fff4;border:2px solid #9ae6b4;padding:.6rem;border-radius:8px;display:none;margin-top:12px;font-weight:600;text-align:center}
+    .muted{color:#718096;font-size:12px;margin:.5rem 0 1rem;padding:.5rem;background:#f7fafc;border-radius:6px;border-left:3px solid #667eea}
+    .muted code{background:#e2e8f0;padding:2px 5px;border-radius:4px;font-size:11px}
+    .table-wrap{overflow:auto;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{border-bottom:1px solid #e2e8f0;padding:.65rem;text-align:left;white-space:nowrap}
+    th{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;position:sticky;top:0;font-weight:700;text-transform:uppercase;font-size:12px;letter-spacing:.5px}
+    tbody tr:hover{background:#f7fafc}
+    td.num{text-align:center;font-weight:600;color:#667eea}
+    button.btn-del{padding:.35rem .6rem;font-size:.8rem;border:0;border-radius:6px;background:linear-gradient(135deg,#fc8181 0%,#e53e3e 100%);color:#fff;cursor:pointer;transition:.3s}
+    button.btn-del:hover{transform:translateY(-2px);box-shadow:0 3px 8px rgba(229,62,62,.4)}
+    @media(max-width:1000px){.two-col{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <header>Futsal League Sydney</header>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('match-results', event)">📊 Match Results</div>
-    <div class="tab" onclick="switchTab('player-performance', event)">⭐ Player Performance</div>
+    <div class="tab active" onclick="switchTab('match-results', event)">Match Results</div>
+    <div class="tab" onclick="switchTab('player-performance', event)">Player Performance</div>
   </div>
 
   <!-- MATCH RESULTS -->
@@ -168,16 +54,15 @@
         <form onsubmit="return submitForm(event, 'match-results')">
           <label>League <input type="text" name="League" placeholder="Heffron"/></label>
           <label>Date <input type="date" id="date" name="Date" required/></label>
-          <label>Round <input type="text" name="Round" placeholder="R1" required/></label>
+          <label>Round <input type="text" name="Round" required/></label>
           <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
-          <label>Away Team <input type="text" name="Away Team" placeholder="Team name" required/></label>
-          <label>Home Goals <input type="number" name="Home Goals" value="0" min="0"/></label>
-          <label>Away Goals <input type="number" name="Away Goals" value="0" min="0"/></label>
+          <label>Away Team <input type="text" name="Away Team" required/></label>
+          <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
+          <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
           <button type="submit">Submit Match</button>
-          <div class="success-message">✓ Match data submitted successfully!</div>
+          <div class="success-message">Match data submitted successfully!</div>
         </form>
       </div>
-
       <div class="card">
         <h2>Existing Matches</h2>
         <div class="muted">Source: <code>match-results</code> (Google Sheets)</div>
@@ -197,28 +82,27 @@
       <div class="card">
         <h2>Player Performance</h2>
         <form onsubmit="return submitForm(event, 'player-performance')">
-          <label>Round <input type="text" name="Round" placeholder="R1" required/></label>
+          <label>Round <input type="text" name="Round" required/></label>
           <label>Team <input type="text" id="team" name="Team" value="Kairat Sydney FC" required/></label>
-          <label>Player <input type="text" name="Player" placeholder="Player name" required/></label>
+          <label>Player <input type="text" name="Player" required/></label>
           <label>Position
             <select name="Position" required>
               <option>Goalkeeper</option><option>Defender</option><option>Winger</option><option>Pivot</option>
             </select>
           </label>
-          <label>Goals <input type="number" id="goals" name="Goals" value="0" min="0"/></label>
-          <label>Assists <input type="number" name="Assists" value="0" min="0"/></label>
-          <label>Shots <input type="number" name="Shots" value="0" min="0"/></label>
-          <label>Shots on Target <input type="number" name="Shots on Target" value="0" min="0"/></label>
-          <label>Passes Completed <input type="number" name="Passes Completed" value="0" min="0"/></label>
-          <label>Interceptions <input type="number" name="Interceptions" value="0" min="0"/></label>
-          <label>Yellow Cards <input type="number" name="Yellow Cards" value="0" min="0"/></label>
-          <label>Red Cards <input type="number" name="Red Cards" value="0" min="0"/></label>
-          <label>Image URL <input type="url" name="URL" placeholder="https://example.com/player.jpg"/></label>
+          <label>Goals <input type="number" id="goals" name="Goals" value="0"/></label>
+          <label>Assists <input type="number" name="Assists" value="0"/></label>
+          <label>Shots <input type="number" name="Shots" value="0"/></label>
+          <label>Shots on Target <input type="number" name="Shots on Target" value="0"/></label>
+          <label>Passes Completed <input type="number" name="Passes Completed" value="0"/></label>
+          <label>Interceptions <input type="number" name="Interceptions" value="0"/></label>
+          <label>Yellow Cards <input type="number" name="Yellow Cards" value="0"/></label>
+          <label>Red Cards <input type="number" name="Red Cards" value="0"/></label>
+          <label>Image URL <input type="url" name="URL" placeholder="https://raw.githubusercontent.com/.../player.jpg"/></label>
           <button type="submit">Submit Player</button>
-          <div class="success-message">✓ Player data submitted successfully!</div>
+          <div class="success-message">Player data submitted successfully!</div>
         </form>
       </div>
-
       <div class="card">
         <h2>Existing Player Performances</h2>
         <div class="muted">Source: <code>player-performance</code> (Google Sheets)</div>
@@ -233,35 +117,87 @@
   </div>
 
   <script>
-    /* ====== CONFIG ====== */
     const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbycaDGmtFqnj0FvBMDnx2Gs63QLpIc1MQLFvmk4Fq5LyngcbyQN0UzuaXsKEvBbREB6IQ/exec';
     const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbyFt5lZTHN7eW3XqIparGjFBZ1P6HtV41JsOrJMfu-695oky3dLOs0hpJN_CUALyMtN/exec';
     const TOKEN = 'SEU_TOKEN_FORTE_AQUI';
-
-    const EXCLUDE_PLAYERS = ['Position', 'URL']; // escondidas na tabela
+    const EXCLUDE_PLAYERS = ['Position','URL'];
 
     function switchTab(tabId, ev){
-      document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
-      document.getElementById(tabId).style.display = 'block';
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      if (ev && ev.target) ev.target.classList.add('active');
-      if (tabId === 'match-results') loadMatches();
-      if (tabId === 'player-performance') loadPlayers();
+      document.querySelectorAll('.form-section').forEach(s=>s.style.display='none');
+      document.getElementById(tabId).style.display='block';
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      if(ev&&ev.target) ev.target.classList.add('active');
+      if(tabId==='match-results') loadMatches();
+      if(tabId==='player-performance') loadPlayers();
     }
 
-    // submit (add) para ambos
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
       const data = Object.fromEntries(new FormData(form).entries());
-      const url = (formType === 'match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
-      if (!url){ alert('Endpoint não configurado.'); return false; }
+      const url = (formType==='match-results') ? ENDPOINT_MATCHES : ENDPOINT_PLAYERS;
+      const body = new URLSearchParams({ ...data, action:'add', token:TOKEN });
+      try{
+        const resp = await fetch(url,{method:'POST',body});
+        const j=await resp.json();
+        if(!j.ok) throw new Error(j.error||'Falha ao enviar');
+        const success=form.querySelector('.success-message');
+        if(success){success.style.display='block';setTimeout(()=>success.style.display='none',3000);}
+        form.reset();
+        if(formType==='player-performance'){document.getElementById('team').value='Kairat Sydney FC';document.getElementById('goals').value='0';loadPlayers();}
+        else{document.getElementById('homeTeam').value='Kairat Sydney FC';const today=new Date().toISOString().split('T')[0];document.getElementById('date').value=today;loadMatches();}
+      }catch(err){alert('Falhou: '+err.message);}
+      return false;
+    }
 
-      const body = new URLSearchParams({ ...data, action:'add', token: TOKEN });
-      try {
-        const resp = await fetch(url, { method:'POST', body });
-        const j = await resp.json();
-        if (!j.ok) throw new Error(j.error || 'Falha ao enviar');
+    async function loadMatches(){
+      await loadAndRender(ENDPOINT_MATCHES,'matches-thead','matches-tbody',
+        ['Date','Round','Home Team','Away Team','Home Goals','Away Goals','Registration Date'],[],true);
+    }
+    async function loadPlayers(){
+      await loadAndRender(ENDPOINT_PLAYERS,'players-thead','players-tbody',
+        ['Round','Team','Player','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','Registration Date'],EXCLUDE_PLAYERS,true);
+    }
 
-        const success = form.querySelector('.success-message');
-        i
+    async function loadAndRender(endpoint, theadId, tbodyId, preferredOrder, excludeCols=[],withDelete=false){
+      try{
+        const resp=await fetch(endpoint,{method:'GET'});const json=await resp.json();
+        if(!json.ok) throw new Error(json.error||'Formato inválido');
+        const thead=document.getElementById(theadId);const tbody=document.getElementById(tbodyId);
+        thead.innerHTML='';tbody.innerHTML='';
+        const headers=reorderAndFilterHeaders(json.headers,preferredOrder,excludeCols);
+        thead.innerHTML=`<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}${withDelete?'<th>Actions</th>':''}</tr>`;
+        json.records.forEach(rec=>{
+          const tds=headers.map(h=>{const v=rec[h];const cls=isNumeric(v)?' class="num"':'';return `<td${cls}>${escapeHtml(formatCell(v))}</td>`;}).join('');
+          const actions=withDelete?`<td><button class="btn-del" onclick="deleteRow('${endpoint}',${rec.rowNumber},this)">Delete</button></td>`:'';
+          tbody.insertAdjacentHTML('beforeend',`<tr>${tds}${actions}</tr>`);
+        });
+      }catch(e){console.error(e);document.getElementById(tbodyId).innerHTML='<tr><td>Failed to load data</td></tr>';}
+    }
+
+    async function deleteRow(endpoint,rowNumber,btnEl){
+      if(!confirm(`Apagar a linha ${rowNumber}?`)) return;
+      try{
+        const body=new URLSearchParams({action:'delete',row:String(rowNumber),token:TOKEN});
+        const resp=await fetch(endpoint,{method:'POST',body});const j=await resp.json();
+        if(!j.ok) throw new Error(j.error||'Falha ao deletar');
+        btnEl.closest('tr').remove();
+      }catch(err){alert('Erro ao deletar: '+err.message);}
+    }
+
+    function reorderAndFilterHeaders(headers,preferred,exclude){
+      const excludeSet=new Set((exclude||[]).map(x=>String(x).toLowerCase()));
+      const norm=s=>String(s||'').toLowerCase();
+      const first=preferred.filter(h=>headers.includes(h)).filter(h=>!excludeSet.has(norm(h)));
+      const rest=headers.filter(h=>!preferred.includes(h)).filter(h=>!excludeSet.has(norm(h)));
+      return [...first,...rest];
+    }
+    function isNumeric(v){return v!==''&&!isNaN(v)&&!(Object.prototype.toString.call(v)==='[object Date]');}
+    function formatCell(v){if(v===null||v===undefined) return '';if(isNumeric(v)) return String(v);if(typeof v==='string'&&!isNaN(Date.parse(v))){const d=new Date(v);if(!isNaN(d.getTime())) return fmtDate(d);}return String(v);}
+    function fmtDate(d){const yyyy=d.getFullYear(),mm=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');const hh=String(d.getHours()).padStart(2,'0'),mi=String(d.getMinutes()).padStart(2,'0');return `${dd}-${mm}-${yyyy} ${hh}:${mi}`;}
+    function escapeHtml(s){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;');}
+
+    document.addEventListener('DOMContentLoaded',()=>{const today=new Date().toISOString().split('T')[0];const dateEl=document.getElementById('date');if(dateEl) dateEl.value=today;loadMatches();});
+  </script>
+</body>
+</html>
