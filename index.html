@@ -5,7 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Futsal League Sydney</title>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; color:#222; background: linear-gradient(to bottom, #0a2a6c 100%, #000000 100%); }
+    html, body { height: 100%; }
+
+    body {
+      margin:0;
+      font-family: Arial, sans-serif;
+      color:#222;
+      background: linear-gradient(180deg, #0a2a6c 0%, #000 100%);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: 100% 100%;
+      min-height: 100vh;
+    }
+
     header { background:#222; color:#fff; padding:1rem; text-align:center; font-weight:700; font-size:22px; }
     .tabs { display:flex; justify-content:center; background:#eee; gap:8px; padding:8px 0; }
     .tab { padding:.65rem 1rem; cursor:pointer; border-radius:6px; }
@@ -15,8 +27,46 @@
     .two-col { display:grid; grid-template-columns: 1fr 2.5fr; gap:24px; }
     .card { background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:1.25rem; }
 
-    form { display:flex; flex-direction:column; }
-    label { margin-top:10px; font-weight:600; }
+    /* Novo layout do formulário */
+    .form-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .form-layout .row-3 {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .form-layout .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .form-layout .full {
+      grid-column: 1 / -1;
+    }
+
+    .vs {
+      font-weight: 800;
+      font-size: 28px;
+      line-height: 1;
+      text-align: center;
+      align-self: center;
+    }
+
+    .form-layout label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-weight: 600;
+    }
+
     input, select { padding:.55rem; margin-top:6px; border:1px solid #ccc; border-radius:4px; }
     button { margin-top:16px; padding:.8rem; border:0; border-radius:6px; background:#0d6efd; color:#fff; font-size:1rem; cursor:pointer; }
     button:hover { background:#0b5ed7; }
@@ -30,7 +80,6 @@
     th { background:#f5f5f5; position:sticky; top:0; z-index:1; }
     td.num { text-align:center; }
 
-    /* Botão Delete */
     button.btn-del {
       padding:.35rem .6rem;
       font-size:.85rem;
@@ -41,6 +90,11 @@
 
     @media (max-width: 1000px){
       .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px){
+      .form-layout .row-3 { grid-template-columns: 1fr; }
+      .vs { display:none; }
+      .form-layout .row-2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -58,15 +112,39 @@
       <!-- Formulário -->
       <div class="card">
         <h2>Match Results</h2>
-        <form onsubmit="return submitForm(event, 'match-results')">
-          <label>League <input type="text" name="League" placeholder="Heffron"/></label>
-          <label>Date <input type="date" id="date" name="Date" required/></label>
-          <label>Round <input type="text" name="Round" required/></label>
-          <label>Home Team <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/></label>
-          <label>Away Team <input type="text" name="Away Team" required/></label>
-          <label>Home Goals <input type="number" name="Home Goals" value="0"/></label>
-          <label>Away Goals <input type="number" name="Away Goals" value="0"/></label>
-          <button type="submit">Submit Match</button>
+        <form onsubmit="return submitForm(event, 'match-results')" class="form-layout">
+          <label class="full">League
+            <input type="text" name="League" placeholder="Heffron"/>
+          </label>
+
+          <label class="full">Date
+            <input type="date" id="date" name="Date" required/>
+          </label>
+
+          <label class="full">Round
+            <input type="text" name="Round" required/>
+          </label>
+
+          <div class="row-3">
+            <label>Home Team
+              <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/>
+            </label>
+            <div class="vs">VS</div>
+            <label>Away Team
+              <input type="text" name="Away Team" required/>
+            </label>
+          </div>
+
+          <div class="row-2">
+            <label>Home Goals
+              <input type="number" name="Home Goals" value="0"/>
+            </label>
+            <label>Away Goals
+              <input type="number" name="Away Goals" value="0"/>
+            </label>
+          </div>
+
+          <button type="submit" class="full">Submit Match</button>
           <div class="success-message">Match data submitted successfully!</div>
         </form>
       </div>
@@ -117,7 +195,7 @@
         </form>
       </div>
 
-      <!-- Tabela (SEM Position e URL) -->
+      <!-- Tabela -->
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Player Performances</h2>
         <div class="muted">Source: <code>player-performance</code> (Google Sheets - https://docs.google.com/spreadsheets/d/e/2PACX-1vS3Sp6AdVeW8aZQ-nYQW9Ui186SCXCNXrX0FS67Mam_bMl5dCb4JXXrKvqukQ0QdbyTEnhoAkyDAeyg/pubhtml?gid=1882100198&single=true)</div>
@@ -135,9 +213,8 @@
     /* ENDPOINTS E TOKEN */
     const ENDPOINT_MATCHES = 'https://script.google.com/macros/s/AKfycbycaDGmtFqnj0FvBMDnx2Gs63QLpIc1MQLFvmk4Fq5LyngcbyQN0UzuaXsKEvBbREB6IQ/exec';
     const ENDPOINT_PLAYERS = 'https://script.google.com/macros/s/AKfycbyFt5lZTHN7eW3XqIparGjFBZ1P6HtV41JsOrJMfu-695oky3dLOs0hpJN_CUALyMtN/exec';
-    const TOKEN = 'SEU_TOKEN_FORTE_AQUI'; // igual ao Apps Script
+    const TOKEN = 'SEU_TOKEN_FORTE_AQUI';
 
-    // colunas que NÃO devem aparecer na TABELA de players
     const EXCLUDE_PLAYERS = ['Position', 'URL'];
 
     function switchTab(tabId, ev){
@@ -150,7 +227,6 @@
       if (tabId === 'player-performance') loadPlayers();
     }
 
-    // envia como x-www-form-urlencoded para evitar preflight
     async function submitForm(event, formType){
       event.preventDefault();
       const form = event.target;
