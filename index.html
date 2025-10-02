@@ -18,12 +18,40 @@
       min-height: 100vh;
     }
 
-    header { background:#222; color:#fff; padding:1rem; text-align:center; font-weight:700; font-size:22px; }
-    .tabs { display:flex; justify-content:center; background:#eee; gap:8px; padding:8px 0; }
-    .tab { padding:.65rem 1rem; cursor:pointer; border-radius:6px; }
-    .tab.active { background:#ddd; font-weight:600; }
+    header { background:#222; color:#fff; padding:1.8rem; text-align:center; font-weight:700; font-size:22px; }
+    .tabs {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 16px 0 10px 0; /* menos espaço acima e abaixo */
+}
 
-    .container { max-width:1400px; margin:2rem auto; padding:0 16px; }
+.tab {
+  color: #fff;
+  background: transparent;
+  font-weight: 600;
+  font-size: 1.15rem;
+  border-radius: 16px;
+  padding: 0.7rem 2.2rem;
+  box-shadow: none;
+  border: none;
+  transition: background 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.tab.active {
+  background: linear-gradient(90deg, #5b8cff 0%, #8f5bff 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(80,80,160,0.13);
+  border: none;
+}
+
+    .container {
+  max-width: 1400px;
+  margin: 1rem auto; /* reduz o espaço acima do conteúdo */
+  padding: 0 16px;
+}
     .two-col { display:grid; grid-template-columns: 1fr 2.5fr; gap:24px; }
     .card { background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:1.25rem; }
 
@@ -89,6 +117,16 @@
     }
     .goals-row label { text-align:center; }  /* centraliza só Home/Away Goals */
     .spacer { width: var(--vs-width); }      /* ocupa o mesmo “slot” do vs */
+    .goals-row input[type="number"] {
+      text-align: center;
+    }
+
+    .teams-row select,
+.goals-row input[type="number"] {
+  width: 220px; /* ajuste conforme desejar */
+  min-width: 0;
+  box-sizing: border-box;
+}
 
     @media (max-width: 1000px){
       .two-col { grid-template-columns: 1fr; }
@@ -99,14 +137,278 @@
       .vs, .spacer { display:none; }
       .teams-row label, .goals-row label { text-align:left; } /* volta ao padrão no mobile */
     }
+
+    /* Deixe todos os inputs do formulário com a mesma largura */
+    form label input[type="text"],
+    form label input[type="date"] {
+      width: 180px; /* ajuste conforme desejar */
+      min-width: 0;
+      display: block;
+      margin-left: 0;
+    }
+
+    #powerbi-dashboard .powerbi-card {
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #fff;
+  height: 80vh;
+  min-height: 500px;
+  display: flex;
+}
+#powerbi-dashboard iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  display: block;
+}
+
+.player-performance-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+  padding: 1.25rem;
+  margin-top: 1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.form-row:first-child {
+  flex-direction: row;
+}
+
+.form-row:not(:first-child) {
+  flex-direction: row;
+}
+
+.form-row label {
+  flex: 1;
+}
+
+.performance-groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 1rem;
+}
+
+.perf-group {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 6px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.perf-field {
+  margin-bottom: 1rem;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-minus, .btn-plus {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+.btn-minus:hover, .btn-plus:hover {
+  background: #0056b3;
+}
+
+.submit-btn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #218838;
+}
+
+/* Padronize largura dos selects na aba Player Performance */
+#player-performance select {
+  width: 220px;
+  min-width: 0;
+  box-sizing: border-box;
+  display: block;
+  margin-left: 0;
+}
+#player-performance .form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+#player-performance .form-row label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+/* Reduza a largura máxima do container da aba Player Performance */
+#player-performance .container {
+  max-width: 1200px; /* ou maior, conforme desejar */
+  margin-left: 0;
+  margin-right: auto;
+  padding: 0 16px;
+}
+
+/* Aumente a largura da coluna do formulário e do card */
+#player-performance .two-col {
+  grid-template-columns: 400px 1fr; /* aumente para 400px ou mais */
+  gap: 24px;
+}
+#player-performance .card:first-child {
+  max-width: 400px;
+}
+
+/* Reduza a largura dos selects e inputs */
+#player-performance select,
+#player-performance input[type="number"],
+#player-performance input[type="url"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  padding: 0.45rem;
+}
+
+/* Reduza a largura dos botões de + e - */
+#player-performance .btn-minus,
+#player-performance .btn-plus {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.95rem;
+}
+
+/* Ajuste os grupos para empilhar em telas menores */
+@media (max-width: 900px) {
+  #player-performance .performance-groups {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+#player-performance input[type="number"] {
+  text-align: center;
+}
+
+#player-performance .perf-group h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.card-options {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.card-radio {
+  display: flex;
+  align-items: center;
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.card-radio input[type="radio"] {
+  margin-right: 5px;
+  accent-color: #222;
+  width: 14px;
+  height: 14px;
+}
+.card-radio.yellow {
+  background: #ffe066;
+}
+.card-radio.red {
+  background: #ff4d4f;
+}
+.card-radio .card-label {
+  font-size: 0.62rem;
+  font-weight: 400;
+  color: #222;
+  padding-top: 1px;
+}
+.card-radio.red .card-label {
+  color: #fff;
+}
+
+.card-visual-options {
+  display: flex;
+  gap: 32px;
+  margin-top: 10px;
+  justify-content: flex-start;
+  align-items: center;
+}
+.card-select-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.card-select-wrap input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #222;
+  margin-right: 0;
+  margin-left: 0;
+}
+.card-visual {
+  width: 48px;
+  height: 70px;
+  border-radius: 16px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  background: #fff;
+}
+.card-visual.yellow {
+  background: #ffe100;
+}
+.card-visual.red {
+  background: #ff2d2d;
+}
+.card-select-wrap input[type="radio"]:focus + .card-visual {
+  outline: 2px solid #222;
+}
+.card-visual:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  transform: scale(1.05);
+}
   </style>
 </head>
 <body>
-  <header>Futsal League Sydney</header>
+  <header>
+  <img src="https://raw.githubusercontent.com/futsal-league-performance/league-performance/refs/heads/main/Futsal%20Sydney%20Logo.png" alt="Futsal Sydney Logo" style="height:54px; vertical-align:middle; margin-right:18px;">
+  Futsal League Sydney
+</header>
 
   <div class="tabs">
     <div class="tab active" onclick="switchTab('match-results', event)">Match Results</div>
     <div class="tab" onclick="switchTab('player-performance', event)">Player Performance</div>
+    <div class="tab" onclick="switchTab('powerbi-dashboard', event)">Dashboard</div>
   </div>
 
   <!-- MATCH RESULTS -->
@@ -123,11 +425,39 @@
           <!-- APENAS estas 4 colunas centralizadas e alinhadas -->
           <div class="teams-row">
             <label>Home Team
-              <input type="text" id="homeTeam" name="Home Team" value="Kairat Sydney FC" required/>
+              <select id="homeTeam" name="Home Team" required>
+                <option>Kairat Sydney FC</option>
+                <option>Sporting Sydney FC</option>
+                <option>Auburn City FC</option>
+                <option>NM Futsal</option>
+                <option>East Coast Bulls FC</option>
+                <option>Myagdi FC</option>
+                <option>Mosaic Metros FC</option>
+                <option>Roselea FC</option>
+                <option>United FC</option>
+                <option>Indoor5's FC</option>
+                <option>North Sydney FC</option>
+                <option>SSC FC</option>
+                <option>Kairat FC</option>
+              </select>
             </label>
             <div class="vs">vs</div>
             <label>Away Team
-              <input type="text" name="Away Team" required/>
+              <select name="Away Team" required>
+                <option>Kairat Sydney FC</option>
+                <option>Sporting Sydney FC</option>
+                <option>Auburn City FC</option>
+                <option>NM Futsal</option>
+                <option>East Coast Bulls FC</option>
+                <option>Myagdi FC</option>
+                <option>Mosaic Metros FC</option>
+                <option>Roselea FC</option>
+                <option>United FC</option>
+                <option>Indoor5's FC</option>
+                <option>North Sydney FC</option>
+                <option>SSC FC</option>
+                <option>Kairat FC</option>
+              </select>
             </label>
           </div>
 
@@ -149,7 +479,10 @@
       <!-- Tabela -->
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Matches</h2>
-        <div class="muted">Source: <code>match-results</code> (Google Sheets - https://docs.google.com/spreadsheets/d/e/2PACX-1vS6YT_gPXXtEOScZDDZsDwsukVh3bEoaZ-pLK-jVlkURcymI0WzrnJQulVij4FhA5LXdGtsT1c26PVO/pubhtml?gid=196825572&single=true)</div>
+        <div class="muted">
+          Source: <code>match-results</code> 
+          (<a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vS6YT_gPXXtEOScZDDZsDwsukVh3bEoaZ-pLK-jVlkURcymI0WzrnJQulVij4FhA5LXdGtsT1c26PVO/pubhtml?gid=196825572&single=true" target="_blank" rel="noopener">Show data</a>)
+        </div>
         <div class="table-wrap" id="matches-table">
           <table>
             <thead id="matches-thead"></thead>
@@ -163,39 +496,148 @@
   <!-- PLAYER PERFORMANCE -->
   <div id="player-performance" class="container form-section" style="display:none;">
     <div class="two-col">
-      <!-- Formulário -->
+      <!-- Coluna da ESQUERDA: Formulário -->
       <div class="card">
         <h2>Player Performance</h2>
         <form onsubmit="return submitForm(event, 'player-performance')">
-          <label>Round <input type="text" name="Round" required/></label>
-          <label>Team <input type="text" id="team" name="Team" value="Kairat Sydney FC" required/></label>
-          <label>Player <input type="text" name="Player" required/></label>
-          <label>Position
-            <select name="Position" required>
-              <option>Goalkeeper</option>
-              <option>Defender</option>
-              <option>Winger</option>
-              <option>Pivot</option>
-            </select>
+          <div class="form-row">
+            <label>Round
+              <select name="Round" required>
+                <option value="">Selecione</option>
+                <option>R1</option>
+                <option>R2</option>
+                <option>R3</option>
+                <option>R4</option>
+                <option>R5</option>
+                <option>R6</option>
+                <option>R7</option>
+                <option>R8</option>
+                <option>R9</option>
+                <option>R10</option>
+                <option>R11</option>
+                <option>R12</option>
+                <option>R13</option>
+                <option>R14</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>Team
+              <select name="Team" required>
+                <option value="">Selecione</option>
+                <option>Kairat Sydney FC</option>
+                <option>Sporting Sydney FC</option>
+                <option>Auburn City FC</option>
+                <option>NM Futsal</option>
+                <option>East Coast Bulls FC</option>
+                <option>Myagdi FC</option>
+                <option>Mosaic Metros FC</option>
+                <option>Roselea FC</option>
+                <option>United FC</option>
+                <option>Indoor5's FC</option>
+                <option>North Sydney FC</option>
+                <option>SSC FC</option>
+                <option>Kairat FC</option>
+              </select>
+            </label>
+            <label>Player
+              <select name="Player" required>
+                <option value="">Selecione</option>
+                <option>Sergio</option>
+                <option>Fransua</option>
+                <option>Jeromel</option>
+                <option>Bruno Garducci</option>
+                <option>Carlos</option>
+                <option>Gigi</option>
+                <option>Bruno Bortolo</option>
+                <option>Alibek</option>
+                <option>Ciro</option>
+                <option>Love</option>
+                <option>Nick</option>
+                <option>Timur</option>
+              </select>
+            </label>
+          </div>
+          <div class="performance-groups">
+            <div class="perf-group">
+              <h3>Ataque e Posse</h3>
+              <div class="perf-field">
+                <label>Goals</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Goals" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div>
+              <div class="perf-field">
+                <label>Shots</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Shots" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div>
+              <!-- <div class="perf-field">
+                <label>Shots on Target</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Shots on Target" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div> -->
+              <div class="perf-field">
+                <label>Passes</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Passes" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="perf-group">
+              <h4>Defense</h4>
+              <div class="perf-field">
+                <label>Assists</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Assists" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div>
+              <div class="perf-field">
+                <label>Interceptions</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Interceptions" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div>
+              <div class="perf-field">
+                <label>Card</label>
+                <div class="card-visual-options">
+                  <div class="card-select-wrap">
+                    <input type="radio" name="Card" value="Yellow" id="card-yellow" />
+                    <label for="card-yellow" class="card-visual yellow"></label>
+                  </div>
+                  <div class="card-select-wrap">
+                    <input type="radio" name="Card" value="Red" id="card-red" />
+                    <label for="card-red" class="card-visual red"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <label>Image URL (Opcional)
+            <input type="url" name="URL" placeholder="https://link_para_foto.do_jogador.jpg"/>
           </label>
-          <label>Goals <input type="number" id="goals" name="Goals" value="0"/></label>
-          <label>Assists <input type="number" name="Assists" value="0"/></label>
-          <label>Shots <input type="number" name="Shots" value="0"/></label>
-          <label>Shots on Target <input type="number" name="Shots on Target" value="0"/></label>
-          <label>Passes Completed <input type="number" name="Passes Completed" value="0"/></label>
-          <label>Interceptions <input type="number" name="Interceptions" value="0"/></label>
-          <label>Yellow Cards <input type="number" name="Yellow Cards" value="0"/></label>
-          <label>Red Cards <input type="number" name="Red Cards" value="0"/></label>
-          <label>Image URL <input type="url" name="URL" placeholder="https://raw.githubusercontent.com/.../player.jpg"/></label>
-          <button type="submit">Submit Player</button>
+          <button type="submit" class="submit-btn">Submit Player Performance</button>
           <div class="success-message">Player data submitted successfully!</div>
         </form>
       </div>
-
-      <!-- Tabela (SEM Position e URL) -->
+      <!-- Coluna da DIREITA: Tabela -->
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Player Performances</h2>
-        <div class="muted">Source: <code>player-performance</code> (Google Sheets - https://docs.google.com/spreadsheets/d/e/2PACX-1vS3Sp6AdVeW8aZQ-nYQW9Ui186SCXCNXrX0FS67Mam_bMl5dCb4JXXrKvqukQ0QdbyTEnhoAkyDAeyg/pubhtml?gid=1882100198&single=true)</div>
+        <div class="muted">Source: <code>player-performance</code> (Google Sheets)</div>
         <div class="table-wrap" id="players-table">
           <table>
             <thead id="players-thead"></thead>
@@ -203,6 +645,15 @@
           </table>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- POWER BI DASHBOARD -->
+  <div id="powerbi-dashboard" class="container form-section" style="display:none;">
+    <div class="card powerbi-card">
+      <iframe title="League Performance"
+        src="https://app.powerbi.com/view?r=eyJrIjoiOTRjOGYxMWQtYzMxZC00YmYzLWEzN2ItYWU2ZGNjNmJlY2I2IiwidCI6ImM4MTYxZjNkLTIxMzQtNDVmMy1hZGU2LWYwNGIwNjY2ZDMwMiJ9"
+        allowfullscreen="true"></iframe>
     </div>
   </div>
 
@@ -276,7 +727,7 @@
         ENDPOINT_PLAYERS,
         'players-thead',
         'players-tbody',
-        ['Round','Team','Player','Goals','Assists','Shots','Shots on Target','Passes Completed','Interceptions','Yellow Cards','Red Cards','Registration Date'],
+        ['Round','Team','Player','Goals','Assists','Shots','Passes','Interceptions','Yellow Cards','Red Cards','Registration Date'],
         EXCLUDE_PLAYERS, true
       );
     }
