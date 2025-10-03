@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Futsal League Sydney</title>
   <style>
+    /* Padronizar largura dos campos League, Date e Round no Match Results */
+    #match-results input[type="text"],
+    #match-results input[type="date"],
+    #match-results select {
+      width: 220px;
+      min-width: 0;
+      box-sizing: border-box;
+      display: block;
+    }
+    /* Evitar sobreposição dentro do card de Match Results */
+    #match-results {
+      --vs-width: 22px;
+    }
+
+    #match-results .teams-row,
+    #match-results .goals-row{
+      grid-template-columns: minmax(0,1fr) var(--vs-width) minmax(0,1fr);
+      column-gap: 8px;
+    }
+
+    #match-results .teams-row select,
+    #match-results .goals-row input[type="number"]{
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 540px){
+      #match-results .teams-row,
+      #match-results .goals-row{
+        grid-template-columns: 1fr;
+      }
+      #match-results .vs,
+      #match-results .spacer{ display:none; }
+    }
+    /* === Deixar a aba Match Results com o mesmo tamanho da Player Performance === */
+    #match-results .container{
+      max-width: 1200px;
+      margin-left: 0;
+      margin-right: auto;
+      padding: 0 16px;
+    }
+
+    #match-results .two-col{
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+    }
+
+    #match-results .card:first-child{
+      max-width: 400px;
+    }
+
+    @media (max-width: 900px){
+      #match-results .two-col{ grid-template-columns: 1fr; gap: 12px; }
+    }
     /* Fundo: degradê azul → preto cobrindo a tela toda */
+      /* Centralizar inputs type="number" e remover spinners/setas */
+      #player-performance input[type="number"],
+      .goals-row input[type="number"] {
+        text-align: center;
+        width: 72px;
+        padding: 6px 8px;
+        box-sizing: border-box;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* remover setas (Chrome/Edge/Safari) */
+      #player-performance input[type="number"]::-webkit-outer-spin-button,
+      #player-performance input[type="number"]::-webkit-inner-spin-button,
+      .goals-row input[type="number"]::-webkit-outer-spin-button,
+      .goals-row input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* remover setas (Firefox) */
+      #player-performance input[type="number"],
+      .goals-row input[type="number"] {
+        -moz-appearance: textfield;
+      }
     html, body { height: 100%; }
     body {
       margin:0;
@@ -90,7 +170,8 @@
       grid-template-columns: 1fr var(--vs-width) 1fr;
       column-gap: 12px;
       align-items: end;          /* alinha pelos inputs */
-      margin-top: 6px;
+      margin-top: 20px;
+      margin-bottom: 20px;
     }
     .teams-row label { text-align:center; }  /* centraliza só Home/Away Team */
 
@@ -114,12 +195,52 @@
       column-gap: 12px;
       align-items: end;
       margin-top: 6px;
+      margin-bottom: 20px;
     }
-    .goals-row label { text-align:center; }  /* centraliza só Home/Away Goals */
+    .goals-row label {
+      text-align: center;
+      width: 100%;
+      display: block;
+    }  /* centraliza só Home/Away Goals */
     .spacer { width: var(--vs-width); }      /* ocupa o mesmo “slot” do vs */
     .goals-row input[type="number"] {
       text-align: center;
     }
+
+      /* ===== Caixa CINZA para Teams + Goals ===== */
+      #match-results .teams-goals-box{
+        background: #f2f2f2;        /* cinza do bloco */
+        border-radius: 14px;
+        padding: 16px 18px;         /* respiro interno */
+        margin: 16px 0 20px;        /* espaço antes/depois da caixa */
+        box-shadow: 0 1px 4px rgba(0,0,0,.06);
+      }
+
+      /* Espaçamento entre a linha de times e a linha de gols dentro da caixa */
+      #match-results .teams-goals-box .teams-row{
+        margin-top: 0;
+        margin-bottom: 16px;        /* distância para a linha de gols */
+      }
+      #match-results .teams-goals-box .goals-row{
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      /* Garantir títulos centralizados dentro da caixa (Home/Away Team & Goals) */
+      #match-results .teams-goals-box .teams-row label,
+      #match-results .teams-goals-box .goals-row .perf-field > label{
+        text-align: center;
+        width: 100%;
+        display: block;
+      }
+
+      /* (opcional) mobile */
+      @media (max-width: 600px){
+        #match-results .teams-goals-box{
+          padding: 14px;
+          border-radius: 12px;
+        }
+      }
 
     .teams-row select,
 .goals-row input[type="number"] {
@@ -135,7 +256,7 @@
       /* Em telas pequenas, empilha as duas colunas */
       .teams-row, .goals-row { grid-template-columns: 1fr; }
       .vs, .spacer { display:none; }
-      .teams-row label, .goals-row label { text-align:left; } /* volta ao padrão no mobile */
+      .teams-row label, .goals-row label { text-align:center; } /* volta ao padrão no mobile */
     }
 
     /* Deixe todos os inputs do formulário com a mesma largura */
@@ -165,7 +286,6 @@
 }
 
 .player-performance-card {
-  background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
   padding: 1.25rem;
@@ -192,12 +312,21 @@
 
 .performance-groups {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 1rem;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: 2.0rem;
 }
 
+.perf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+
 .perf-group {
+  gap: 0;
   background: #f9f9f9;
   padding: 1rem;
   border-radius: 6px;
@@ -356,7 +485,7 @@
 
 .card-visual-options {
   display: flex;
-  gap: 32px;
+  gap: 10px;
   margin-top: 10px;
   justify-content: flex-start;
   align-items: center;
@@ -375,9 +504,9 @@
   margin-left: 0;
 }
 .card-visual {
-  width: 48px;
-  height: 70px;
-  border-radius: 16px;
+  width: 24px;
+  height: 36px;
+  border-radius: 8px;
   display: inline-block;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
   cursor: pointer;
@@ -397,6 +526,120 @@
   box-shadow: 0 4px 16px rgba(0,0,0,0.18);
   transform: scale(1.05);
 }
+
+.card-yellow, .card-red {
+  width: 12px;   /* diminua conforme necessário */
+  height: 12px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.card-yellow {
+  width: 6px;
+  height: 6px;
+  background: yellow;
+}
+
+.card-red {
+  width: 6px;
+  height: 6px;
+  background: red;
+}
+
+input[type="radio"] {
+  width: 14px;   /* diminua conforme necessário */
+  height: 14px;
+  accent-color: inherit; /* mantém cor padrão, se quiser */
+  transform: scale(0.6); /* alternativa para reduzir */
+}
+
+.cards-container {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* diminua para aproximar */
+}
+
+.card-yellow, .card-red {
+  margin: 0 3px; /* diminua ou remova */
+}
+/* ===== Alinhar perfeitamente:  - 0 +  ===== */
+#player-performance .input-group {
+  display: flex;
+  align-items: center;   /* centraliza verticalmente */
+  gap: 8px;
+}
+
+/* altura única para tudo */
+:root { --ctrl-h: 26px;  --ig-gap: 10px; }   /* ajuste fino aqui: 34–40px */
+
+
+/* linha com esquerda/direita */
+.perf-row{
+  gap: 0px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--col-gap, 24px);
+  row-gap: var(--row-gap, 16px);
+  align-items: center;
+}
+
+  /* diminuir o espaço ENTRE as duas colunas (esq x dir) */
+  #player-performance .perf-row {
+    --col-gap: 12px;       /* antes era 24px */
+  }
+
+  /* (opcional) diminuir o espaço ENTRE AS LINHAS (Goals↔Shots↔Passes) */
+  #player-performance .performance-groups .perf-row {
+    --row-gap: 10px;       /* antes era 16px */
+  }
+
+  /* (opcional) reduzir o espaço vertical dentro de cada bloco */
+  #player-performance .perf-field {
+    margin-bottom: 0.6rem; /* antes 1rem */
+  }
+
+/* grupo -, 0, +  */
+#player-performance .input-group{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ig-gap, 10px);
+}
+
+#player-performance .input-group input[type="number"]{
+  height: var(--ctrl-h, 26px);
+  line-height: var(--ctrl-h, 26px);
+  padding: 0 12px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#player-performance .input-group .btn-minus,
+#player-performance .input-group .btn-plus{
+  width: var(--ctrl-h, 26px);
+  height: var(--ctrl-h, 26px);
+  padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  box-sizing: border-box;
+}
+
+/* mantenha o margin-top apenas no botão de submit */
+.submit-btn { margin-top: 16px; }
+  /* ==== overrides finais para reduzir espaços na Player Performance ==== */
+  #player-performance .perf-row{
+    column-gap: 12px !important;   /* espaço entre as duas colunas (esq x dir) */
+    row-gap: 8px !important;       /* espaço interno da grid entre linhas */
+    margin-bottom: 0 !important;   /* zera o espaçamento herdado de 24px */
+  }
+
+  #player-performance .perf-field{
+    margin: 6px 0 !important;      /* reduz o respiro dentro de cada campo */
+  }
+
+  /* se quiser ainda mais compactado, pode reduzir a margem das .form-row também */
+  #player-performance .form-row{
+    margin-bottom: 8px !important;
+  }
   </style>
 </head>
 <body>
@@ -420,55 +663,86 @@
         <form onsubmit="return submitForm(event, 'match-results')">
           <label>League <input type="text" name="League" placeholder="Heffron"/></label>
           <label>Date <input type="date" id="date" name="Date" required/></label>
-          <label>Round <input type="text" name="Round" required/></label>
+          <label>Round</label>
+          <select name="Round" required>
+            <option value="">Selecione</option>
+            <option>R1</option>
+            <option>R2</option>
+            <option>R3</option>
+            <option>R4</option>
+            <option>R5</option>
+            <option>R6</option>
+            <option>R7</option>
+            <option>R8</option>
+            <option>R9</option>
+            <option>R10</option>
+            <option>R11</option>
+            <option>R12</option>
+            <option>R13</option>
+            <option>R14</option>
+          </select>
 
-          <!-- APENAS estas 4 colunas centralizadas e alinhadas -->
-          <div class="teams-row">
-            <label>Home Team
-              <select id="homeTeam" name="Home Team" required>
-                <option>Kairat Sydney FC</option>
-                <option>Sporting Sydney FC</option>
-                <option>Auburn City FC</option>
-                <option>NM Futsal</option>
-                <option>East Coast Bulls FC</option>
-                <option>Myagdi FC</option>
-                <option>Mosaic Metros FC</option>
-                <option>Roselea FC</option>
-                <option>United FC</option>
-                <option>Indoor5's FC</option>
-                <option>North Sydney FC</option>
-                <option>SSC FC</option>
-                <option>Kairat FC</option>
-              </select>
-            </label>
-            <div class="vs">vs</div>
-            <label>Away Team
-              <select name="Away Team" required>
-                <option>Kairat Sydney FC</option>
-                <option>Sporting Sydney FC</option>
-                <option>Auburn City FC</option>
-                <option>NM Futsal</option>
-                <option>East Coast Bulls FC</option>
-                <option>Myagdi FC</option>
-                <option>Mosaic Metros FC</option>
-                <option>Roselea FC</option>
-                <option>United FC</option>
-                <option>Indoor5's FC</option>
-                <option>North Sydney FC</option>
-                <option>SSC FC</option>
-                <option>Kairat FC</option>
-              </select>
-            </label>
-          </div>
+          <!-- Bloco cinza para Teams + Goals -->
+          <div class="teams-goals-box">
+            <div class="teams-row">
+              <label>Home Team
+                <select id="homeTeam" name="Home Team" required>
+                  <option>Kairat Sydney FC</option>
+                  <option>Sporting Sydney FC</option>
+                  <option>Auburn City FC</option>
+                  <option>NM Futsal</option>
+                  <option>East Coast Bulls FC</option>
+                  <option>Myagdi FC</option>
+                  <option>Mosaic Metros FC</option>
+                  <option>Roselea FC</option>
+                  <option>United FC</option>
+                  <option>Indoor5's FC</option>
+                  <option>North Sydney FC</option>
+                  <option>SSC FC</option>
+                  <option>Kairat FC</option>
+                </select>
+              </label>
+              <div class="vs">vs</div>
+              <label>Away Team
+                <select name="Away Team" required>
+                  <option>Kairat Sydney FC</option>
+                  <option>Sporting Sydney FC</option>
+                  <option>Auburn City FC</option>
+                  <option>NM Futsal</option>
+                  <option>East Coast Bulls FC</option>
+                  <option>Myagdi FC</option>
+                  <option>Mosaic Metros FC</option>
+                  <option>Roselea FC</option>
+                  <option>United FC</option>
+                  <option>Indoor5's FC</option>
+                  <option>North Sydney FC</option>
+                  <option>SSC FC</option>
+                  <option>Kairat FC</option>
+                </select>
+              </label>
+            </div>
 
-          <div class="goals-row">
-            <label>Home Goals
-              <input type="number" name="Home Goals" value="0"/>
-            </label>
-            <div class="spacer"></div> <!-- mantém largura igual ao "vs" -->
-            <label>Away Goals
-              <input type="number" name="Away Goals" value="0"/>
-            </label>
+            <div class="goals-row">
+              <div class="perf-field">
+                <label>Home Goals</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Home Goals" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div>
+
+              <div class="spacer"></div>
+
+              <div class="perf-field">
+                <label>Away Goals</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Away Goals" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <button type="submit">Submit Match</button>
@@ -480,7 +754,7 @@
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Matches</h2>
         <div class="muted">
-          Source: <code>match-results</code> 
+          Source: match-results 
           (<a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vS6YT_gPXXtEOScZDDZsDwsukVh3bEoaZ-pLK-jVlkURcymI0WzrnJQulVij4FhA5LXdGtsT1c26PVO/pubhtml?gid=196825572&single=true" target="_blank" rel="noopener">Show data</a>)
         </div>
         <div class="table-wrap" id="matches-table">
@@ -559,8 +833,7 @@
             </label>
           </div>
           <div class="performance-groups">
-            <div class="perf-group">
-              <h3>Ataque e Posse</h3>
+            <div class="perf-row">
               <div class="perf-field">
                 <label>Goals</label>
                 <div class="input-group">
@@ -570,37 +843,20 @@
                 </div>
               </div>
               <div class="perf-field">
-                <label>Shots</label>
-                <div class="input-group">
-                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
-                  <input type="number" name="Shots" value="0" min="0"/>
-                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
-                </div>
-              </div>
-              <!-- <div class="perf-field">
-                <label>Shots on Target</label>
-                <div class="input-group">
-                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
-                  <input type="number" name="Shots on Target" value="0" min="0"/>
-                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
-                </div>
-              </div> -->
-              <div class="perf-field">
-                <label>Passes</label>
-                <div class="input-group">
-                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
-                  <input type="number" name="Passes" value="0" min="0"/>
-                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
-                </div>
-              </div>
-            </div>
-            <div class="perf-group">
-              <h4>Defense</h4>
-              <div class="perf-field">
                 <label>Assists</label>
                 <div class="input-group">
                   <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
                   <input type="number" name="Assists" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="perf-row">
+              <div class="perf-field">
+                <label>Shots</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Shots" value="0" min="0"/>
                   <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
                 </div>
               </div>
@@ -609,6 +865,16 @@
                 <div class="input-group">
                   <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
                   <input type="number" name="Interceptions" value="0" min="0"/>
+                  <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="perf-row">
+              <div class="perf-field">
+                <label>Passes</label>
+                <div class="input-group">
+                  <button type="button" class="btn-minus" onclick="changeValue(this, -1)">−</button>
+                  <input type="number" name="Passes" value="0" min="0"/>
                   <button type="button" class="btn-plus" onclick="changeValue(this, 1)">+</button>
                 </div>
               </div>
@@ -637,7 +903,7 @@
       <!-- Coluna da DIREITA: Tabela -->
       <div class="card">
         <h2 style="margin-bottom:.6rem;">Existing Player Performances</h2>
-        <div class="muted">Source: <code>player-performance</code> (Google Sheets)</div>
+        <div class="muted">Source: player-performance (Google Sheets)</div>
         <div class="table-wrap" id="players-table">
           <table>
             <thead id="players-thead"></thead>
